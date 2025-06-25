@@ -1,0 +1,53 @@
+[project]
+name = "pokedex"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Murilo Seidenstucker",email = "murilocampos.004@gmail.com"}
+]
+readme = "README.md"
+requires-python = "^3.12"
+dependencies = [
+    "sqlalchemy (>=2.0.38,<3.0.0)",
+    "mysql-connector-python (>=9.2.0,<10.0.0)",
+    "pymysql (>=1.1.1,<2.0.0)",
+    "typer (>=0.16.0,<0.17.0)",
+]
+
+[project.scripts]
+pokedex = "run:app"
+
+[tool.poetry]
+packages = [{include = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
+isort = "^5.13.2"
+taskipy = "^1.14.1"
+black = "^24.10.0"
+pylint = "^3.3.3"
+pre-commit = "^4.1.0"
+
+[tool.poetry.group.doc.dependencies]
+mkdocs-material = "^9.5.50"
+mkdocstrings = "^0.27.0"
+mkdocstrings-python = "^1.13.0"
+
+[tool.pytest.ini_options]
+pythonpath = "."
+addopts = "--doctest-modules"
+
+[tool.isort]
+profile = "black"
+
+[tool.taskipy.tasks]
+lint = "black --check --diff . && isort --check --diff ."
+docs = "mkdocs serve"
+pre_test = "task lint"
+test = "pytest -s -x --cov=. -vv"
+post_test = "coverage html"
