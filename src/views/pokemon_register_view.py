@@ -19,6 +19,9 @@ class PokemonRegisterView:
         return new_pokemon_info
 
     def registry_pokemon_success(self, message: Dict) -> None:
+
+        self.__validate_fields(message)
+
         os.system("cls||clear")
 
         success_message = f"""
@@ -28,11 +31,15 @@ class PokemonRegisterView:
             Registros: { message["count"] }
             Infos:
                 Nome: { message["attributes"]["name"] }
-                Tipo 1: { message["attributes"]["type"] }
+                Tipo Primário: { message["attributes"]["type"] }
         """
         console.print(success_message)
 
     def registry_pokemon_fail(self, error: str) -> None:
+
+        if not isinstance(error, str):
+            raise Exception("Expected type: 'str'")
+
         os.system("cls||clear")
 
         fail_message = f"""
@@ -41,3 +48,25 @@ class PokemonRegisterView:
             Erro: { error }
         """
         console.print(fail_message)
+
+    def __validate_fields(self, field: Dict) -> None:
+        if not isinstance(field, Dict):
+            raise Exception("Expected type: 'Dict'")
+
+        if "type" not in field:
+            raise Exception("Required key missing: 'type'")
+
+        if "count" not in field:
+            raise Exception("Required key missing: 'count'")
+
+        if "attributes" not in field:
+            raise Exception("Required key missing: 'attributes'")
+
+        if not isinstance(field["attributes"], Dict):
+            raise Exception("Expected value type for 'attributes' key: 'Dict'")
+
+        if "name" not in field["attributes"]:
+            raise Exception("Required key missing in attributes dict: 'name'")
+
+        if "type" not in field["attributes"]:
+            raise Exception("Required key missing in attributes dict: 'type'")
