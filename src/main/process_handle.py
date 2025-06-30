@@ -2,11 +2,11 @@ import sys
 
 from rich.console import Console
 
-from src.main.constructor.pokemon_register_constructor import (
+from src.main.constructors.pokemon_register_constructor import (
     pokemon_register_constructor,
 )
 
-from .constructor.introduction_process import introduction_process
+from .constructors.introduction_process import introduction_process
 
 console = Console()
 
