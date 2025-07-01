@@ -7,8 +7,8 @@ from sqlalchemy.orm import sessionmaker
 class DBConnectionHandler:
     """Gerencia a conexão com o banco de dados utilizando SQLAlchemy."""
 
-    def __init__(self) -> None:
-        self.__connection_string = "{}://{}:{}@{}:{}/{}".format(
+    def __init__(self, connection_string: str) -> None:
+        self.__connection_string = connection_string or "{}://{}:{}@{}:{}/{}".format(
             "mysql+pymysql", "root", "root", "localhost", "3306", "pokedex"
         )
         self.__engine = self.__create_database_engine()

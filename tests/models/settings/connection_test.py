@@ -4,13 +4,14 @@ from src.models.settings.connection import DBConnectionHandler
 
 
 @pytest.mark.skip(reason="sensitive test")
-def test_create_database_engine():
-    """Teste para verificar se a engine de conexão ao banco de dados é criada corretamente.
+def test_db_connection_handler_with_sqlite_memory():
+    """Teste de integração da conexão usando SQLite em memória"""
+    handler = DBConnectionHandler(connection_string="sqlite:///:memory:")
 
-    Skipped:
-        Este teste está sendo ignorado devido a questões sensíveis relacionadas ao banco de dados.
-    """
-    db_connection_handler = DBConnectionHandler()
-    engine = db_connection_handler.get_engine()
-
+    engine = handler.get_engine()
     assert engine is not None
+    assert "sqlite" in str(engine.url)
+
+    with handler as db:
+        assert db.session is not None
+        assert db.session.is_active
