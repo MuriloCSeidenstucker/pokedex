@@ -1,11 +1,11 @@
-from typing import Any
+from typing import Dict, List
 
 from src.models.entities.pokemons_entity import PokemonsEntity
 from src.models.settings.connection import DBConnectionHandler
 
 
 class PokemonsRepository:
-    def insert_pokemon(self, pokemon: Any) -> None:
+    def insert_pokemon(self, pokemon: Dict) -> None:
         with DBConnectionHandler() as db:
             try:
                 new_registry = PokemonsEntity(
@@ -18,6 +18,15 @@ class PokemonsRepository:
                 )
                 db.session.add(new_registry)
                 db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                raise e
+
+    def select_all_pokemons(self) -> List:
+        with DBConnectionHandler() as db:
+            try:
+                pokemons = db.session.query(PokemonsEntity).all()
+                return pokemons
             except Exception as e:
                 db.session.rollback()
                 raise e
