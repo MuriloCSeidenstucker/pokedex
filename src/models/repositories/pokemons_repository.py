@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from src.models.entities.pokemons_entity import PokemonsEntity
 from src.models.settings.connection import DBConnectionHandler
@@ -18,6 +18,23 @@ class PokemonsRepository:
                 )
                 db.session.add(new_registry)
                 db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                raise e
+
+    def select_pokemon(self, by: str, value: str) -> Any:
+        column_map = {
+            "id": PokemonsEntity.pokemon_id,
+            "name": PokemonsEntity.pkn_name,
+        }
+        with DBConnectionHandler() as db:
+            try:
+                pokemon = (
+                    db.session.query(PokemonsEntity)
+                    .filter(column_map[by] == value)
+                    .first()
+                )
+                return pokemon
             except Exception as e:
                 db.session.rollback()
                 raise e
