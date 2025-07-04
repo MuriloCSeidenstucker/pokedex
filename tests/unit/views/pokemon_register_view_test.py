@@ -19,11 +19,24 @@ def fake_print(*objects: Any):
 
 
 def fake_input(prompt: str) -> str:
-    return "Pokemon_Spy" if prompt == "Determine o nome do pokemon: " else "PTipo_Spy"
+    return_value = ""
+    if prompt == "Determine o id do pokemon: ":
+        return_value = "9999"
+    elif prompt == "Determine o nome do pokemon: ":
+        return_value = "Pokemon_Spy"
+    elif prompt == "Determine o tipo primário do pokemon: ":
+        return_value = "Pkn_Type_1"
+    elif prompt == "Determine o tipo secundário do pokemon: ":
+        return_value = "Pkn_Type_2"
+    elif prompt == "Determine a geração do pokemon: ":
+        return_value = "1"
+    elif prompt == "Este pokemon é lendário? 1(Sim) 0(Não): ":
+        return_value = "0"
+
+    return return_value
 
 
 def test_registry_pokemon_view(mocker):
-
     mocker.patch("os.system", side_effect=fake_io_system)
     mocker.patch("rich.console.Console.print", side_effect=fake_print)
     spy: MagicMock = mocker.patch("rich.console.Console.input", side_effect=fake_input)
@@ -34,10 +47,22 @@ def test_registry_pokemon_view(mocker):
 
     assert spy.called
     assert spy.mock_calls == [
+        mocker.call("Determine o id do pokemon: "),
         mocker.call("Determine o nome do pokemon: "),
-        mocker.call("Determine o tipo do pokemon: "),
+        mocker.call("Determine o tipo primário do pokemon: "),
+        mocker.call("Determine o tipo secundário do pokemon: "),
+        mocker.call("Determine a geração do pokemon: "),
+        mocker.call("Este pokemon é lendário? 1(Sim) 0(Não): "),
     ]
-    assert result == {"name": return_values[0], "type": return_values[1]}
+    expected = {
+        "pokemon_id": return_values[0],
+        "pkn_name": return_values[1],
+        "type_1": return_values[2],
+        "type_2": return_values[3],
+        "generation": return_values[4],
+        "is_legendary": return_values[5],
+    }
+    assert result == expected
 
 
 def test_registry_pokemon_success(mocker):
@@ -47,7 +72,14 @@ def test_registry_pokemon_success(mocker):
     message = {
         "type": "Spy",
         "count": 1,
-        "attributes": {"name": "Pokemon_Spy", "type": "PTipo_Spy"},
+        "attributes": {
+            "pokemon_id": "1",
+            "pkn_name": "Pokemon_Spy",
+            "type_1": "Pkn_Type_1",
+            "type_2": "Pkn_Type_2",
+            "generation": "1",
+            "is_legendary": "0",
+        },
     }
     view.registry_pokemon_success(message)
 
@@ -90,17 +122,71 @@ def test_registry_pokemon_success(mocker):
             {
                 "type": "Spy",
                 "count": 1,
-                "attributes": {"error_name": "Pokemon_Spy", "type": "PTipo_Spy"},
+                "attributes": {"error_id": "1"},
             },
-            "Required key missing in attributes dict: 'name'",
+            "Required key missing in attributes dict: 'pokemon_id'",
         ),
         (
             {
                 "type": "Spy",
                 "count": 1,
-                "attributes": {"name": "Pokemon_Spy", "error_type": "PTipo_Spy"},
+                "attributes": {"pokemon_id": "1", "error_name": "Pokemon_Spy"},
             },
-            "Required key missing in attributes dict: 'type'",
+            "Required key missing in attributes dict: 'pkn_name'",
+        ),
+        (
+            {
+                "type": "Spy",
+                "count": 1,
+                "attributes": {
+                    "pokemon_id": "1",
+                    "pkn_name": "Pokemon_Spy",
+                    "error_type": "PTipo_Spy",
+                },
+            },
+            "Required key missing in attributes dict: 'type_1'",
+        ),
+        (
+            {
+                "type": "Spy",
+                "count": 1,
+                "attributes": {
+                    "pokemon_id": "1",
+                    "pkn_name": "Pokemon_Spy",
+                    "type_1": "Pkn_Type_1",
+                    "error_type": "",
+                },
+            },
+            "Required key missing in attributes dict: 'type_2'",
+        ),
+        (
+            {
+                "type": "Spy",
+                "count": 1,
+                "attributes": {
+                    "pokemon_id": "1",
+                    "pkn_name": "Pokemon_Spy",
+                    "type_1": "Pkn_Type_1",
+                    "type_2": "Pkn_Type_2",
+                    "error_generation": "",
+                },
+            },
+            "Required key missing in attributes dict: 'generation'",
+        ),
+        (
+            {
+                "type": "Spy",
+                "count": 1,
+                "attributes": {
+                    "pokemon_id": "1",
+                    "pkn_name": "Pokemon_Spy",
+                    "type_1": "Pkn_Type_1",
+                    "type_2": "Pkn_Type_2",
+                    "generation": "1",
+                    "error_legendary": "",
+                },
+            },
+            "Required key missing in attributes dict: 'is_legendary'",
         ),
     ],
 )
