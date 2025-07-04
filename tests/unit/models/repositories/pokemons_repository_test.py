@@ -4,6 +4,7 @@ from typing import List
 
 from pytest_mock import MockerFixture
 
+from src.models.by import By
 from src.models.entities.pokemons_entity import PokemonsEntity
 from src.models.repositories.pokemons_repository import PokemonsRepository
 
@@ -75,6 +76,83 @@ def test_insert_pokemon_error(mocker: MockerFixture):
     assert not mock_session.add.called
     mock_session.commit.assert_not_called()
     mock_session.rollback.assert_called_once()
+
+
+def test_select_pokemon(mocker: MockerFixture):
+    mock_pokemon = PokemonsEntity(
+        pokemon_id="1",
+        pkn_name="Bulbasaur",
+        type_1="Grass",
+        type_2="Poison",
+        generation="1",
+        is_legendary="0",
+    )
+    mock_filter = mocker.MagicMock()
+    mock_filter.first.return_value = mock_pokemon
+    mock_query = mocker.MagicMock()
+    mock_query.filter.return_value = mock_filter
+    mock_session = mocker.MagicMock()
+    mock_session.query.return_value = mock_query
+    mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
+    mock_db_handler = mocker.MagicMock()
+    mock_db_handler.__enter__.return_value = mock_db_handler
+    mock_db_handler.session = mock_session
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler",
+        return_value=mock_db_handler,
+    )
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler.sqlalchemy.orm.sessionmaker",
+        return_value=mock_sessionmaker,
+    )
+
+    repo = PokemonsRepository()
+    response = repo.select_pokemon(By.NAME, "Bulbasaur")
+
+    mock_session.query.assert_called_once_with(PokemonsEntity)
+    mock_query.filter.assert_called_once()
+    mock_filter.first.assert_called_once()
+    mock_session.rollback.assert_not_called()
+    assert isinstance(response, PokemonsEntity)
+    assert response == mock_pokemon
+    assert response.pkn_name == "Bulbasaur"
+
+
+def test_select_pokemon_by_error():
+    repo = PokemonsRepository()
+    try:
+        repo.select_pokemon("pkn_name", "Bulbasaur")
+        assert False, "Expected exception not raised"
+    except Exception as e:
+        assert str(e) == "Invalid argument: pkn_name"
+
+
+def test_select_pokemon_error(mocker: MockerFixture):
+    mock_filter = mocker.MagicMock()
+    mock_filter.first.side_effect = Exception("NotFound")
+    mock_query = mocker.MagicMock()
+    mock_query.filter.return_value = mock_filter
+    mock_session = mocker.MagicMock()
+    mock_session.query.return_value = mock_query
+    mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
+    mock_db_handler = mocker.MagicMock()
+    mock_db_handler.__enter__.return_value = mock_db_handler
+    mock_db_handler.session = mock_session
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler",
+        return_value=mock_db_handler,
+    )
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler.sqlalchemy.orm.sessionmaker",
+        return_value=mock_sessionmaker,
+    )
+
+    repo = PokemonsRepository()
+    try:
+        repo.select_pokemon("name", "Bulbasaur")
+        assert False, "Expected exception not raised"
+    except Exception as e:
+        assert str(e) == "NotFound"
 
 
 def test_select_all_pokemons(mocker: MockerFixture):

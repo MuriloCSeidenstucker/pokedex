@@ -27,6 +27,10 @@ class PokemonsRepository:
             "id": PokemonsEntity.pokemon_id,
             "name": PokemonsEntity.pkn_name,
         }
+
+        if by not in column_map:
+            raise ValueError(f"Invalid argument: {by}")
+
         with DBConnectionHandler() as db:
             try:
                 pokemon = (
