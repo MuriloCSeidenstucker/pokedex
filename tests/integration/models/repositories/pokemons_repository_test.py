@@ -5,6 +5,8 @@ from typing import List
 import pytest
 from sqlalchemy import text
 
+from src.models.by import By
+from src.models.entities.pokemons_entity import PokemonsEntity
 from src.models.repositories.pokemons_repository import PokemonsRepository
 from src.models.settings.connection import DBConnectionHandler
 
@@ -36,6 +38,46 @@ def test_insert_pokemon_with_real_mysql():
     assert registry.pokemon_id == int(request["pokemon_id"])
 
     __data_reset(registry)
+
+
+@pytest.mark.skip(reason="sensitive test")
+def test_select_pokemon_with_real_mysql():
+    repo = PokemonsRepository()
+    request_1 = {
+        "pokemon_id": "1",
+        "pkn_name": "Bulbasaur",
+        "type_1": "Grass",
+        "type_2": "Poison",
+        "generation": "1",
+        "is_legendary": "0",
+    }
+    request_2 = {
+        "pokemon_id": "2",
+        "pkn_name": "Ivysaur",
+        "type_1": "Grass",
+        "type_2": "Poison",
+        "generation": "1",
+        "is_legendary": "0",
+    }
+    repo.insert_pokemon(request_1)
+    repo.insert_pokemon(request_2)
+
+    pkn_id_1 = repo.select_pokemon("id", "1")
+    pkn_name_1 = repo.select_pokemon("name", "Bulbasaur")
+    pkn_id_2 = repo.select_pokemon(By.ID, "2")
+    pkn_name_2 = repo.select_pokemon(By.NAME, "Ivysaur")
+
+    assert isinstance(pkn_id_1, PokemonsEntity)
+    assert isinstance(pkn_name_1, PokemonsEntity)
+    assert isinstance(pkn_id_2, PokemonsEntity)
+    assert isinstance(pkn_name_2, PokemonsEntity)
+    assert pkn_id_1.pokemon_id == pkn_name_1.pokemon_id
+    assert pkn_id_2.pokemon_id == pkn_name_2.pokemon_id
+    assert pkn_id_1.pkn_name == pkn_name_1.pkn_name
+    assert pkn_id_2.pkn_name == pkn_name_2.pkn_name
+
+    delete_ids = [request_1["pokemon_id"], request_2["pokemon_id"]]
+    __data_reset(delete_ids)
 
 
 @pytest.mark.skip(reason="sensitive test")
