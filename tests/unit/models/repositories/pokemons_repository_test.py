@@ -4,20 +4,21 @@ from typing import List
 
 from pytest_mock import MockerFixture
 
-from src.models.by import By
+from src.common.by import By
+from src.common.pokemon import Pokemon
 from src.models.entities.pokemons_entity import PokemonsEntity
 from src.models.repositories.pokemons_repository import PokemonsRepository
 
 
 def test_insert_pokemon(mocker: MockerFixture):
-    request = {
-        "pokemon_id": "1",
-        "pkn_name": "Bulbasaur",
-        "type_1": "Grass",
-        "type_2": "Poison",
-        "generation": "1",
-        "is_legendary": "0",
-    }
+    pokemon = Pokemon(
+        pokemon_id=4,
+        pkn_name="Charmander",
+        type_1="Fire",
+        type_2="",
+        generation=1,
+        is_legendary=0,
+    )
 
     mock_session = mocker.MagicMock()
     mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
@@ -34,24 +35,22 @@ def test_insert_pokemon(mocker: MockerFixture):
     )
 
     repo = PokemonsRepository()
-    repo.insert_pokemon(request)
+    repo.insert_pokemon(pokemon)
 
     assert mock_session.add.called
     called_args = mock_session.add.call_args[0][0]
     assert isinstance(called_args, PokemonsEntity)
-    assert called_args.pokemon_id == request["pokemon_id"]
-    assert called_args.pkn_name == request["pkn_name"]
-    assert called_args.type_1 == request["type_1"]
-    assert called_args.type_2 == request["type_2"]
-    assert called_args.generation == request["generation"]
-    assert called_args.is_legendary == request["is_legendary"]
+    assert called_args.pokemon_id == pokemon.pokemon_id
+    assert called_args.pkn_name == pokemon.pkn_name
+    assert called_args.type_1 == pokemon.type_1
+    assert called_args.type_2 == pokemon.type_2
+    assert called_args.generation == pokemon.generation
+    assert called_args.is_legendary == pokemon.is_legendary
     mock_session.commit.assert_called_once()
     mock_session.rollback.assert_not_called()
 
 
 def test_insert_pokemon_error(mocker: MockerFixture):
-    request = {}
-
     mock_session = mocker.MagicMock()
     mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
     mock_db_handler = mocker.MagicMock()
@@ -68,10 +67,10 @@ def test_insert_pokemon_error(mocker: MockerFixture):
 
     repo = PokemonsRepository()
     try:
-        repo.insert_pokemon(request)
+        repo.insert_pokemon(None)
         assert False, "Expected exception not raised"
     except Exception as e:
-        assert str(e) == "'pokemon_id'"
+        assert str(e) == "'NoneType' object has no attribute 'pokemon_id'"
 
     assert not mock_session.add.called
     mock_session.commit.assert_not_called()
@@ -79,13 +78,13 @@ def test_insert_pokemon_error(mocker: MockerFixture):
 
 
 def test_select_pokemon(mocker: MockerFixture):
-    mock_pokemon = PokemonsEntity(
-        pokemon_id="1",
+    mock_pokemon = Pokemon(
+        pokemon_id=1,
         pkn_name="Bulbasaur",
         type_1="Grass",
         type_2="Poison",
-        generation="1",
-        is_legendary="0",
+        generation=1,
+        is_legendary=0,
     )
     mock_filter = mocker.MagicMock()
     mock_filter.first.return_value = mock_pokemon
@@ -113,7 +112,7 @@ def test_select_pokemon(mocker: MockerFixture):
     mock_query.filter.assert_called_once()
     mock_filter.first.assert_called_once()
     mock_session.rollback.assert_not_called()
-    assert isinstance(response, PokemonsEntity)
+    assert isinstance(response, Pokemon)
     assert response == mock_pokemon
     assert response.pkn_name == "Bulbasaur"
 
@@ -156,21 +155,21 @@ def test_select_pokemon_error(mocker: MockerFixture):
 
 
 def test_select_all_pokemons(mocker: MockerFixture):
-    mock_pokemon_1 = PokemonsEntity(
-        pokemon_id="1",
+    mock_pokemon_1 = Pokemon(
+        pokemon_id=1,
         pkn_name="Bulbasaur",
         type_1="Grass",
         type_2="Poison",
-        generation="1",
-        is_legendary="0",
+        generation=1,
+        is_legendary=0,
     )
-    mock_pokemon_2 = PokemonsEntity(
-        pokemon_id="2",
+    mock_pokemon_2 = Pokemon(
+        pokemon_id=2,
         pkn_name="Ivysaur",
         type_1="Grass",
         type_2="Poison",
-        generation="1",
-        is_legendary="0",
+        generation=1,
+        is_legendary=0,
     )
     expected_pokemons = [mock_pokemon_1, mock_pokemon_2]
     mock_query = mocker.MagicMock()
