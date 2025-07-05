@@ -4,6 +4,11 @@ from src.common.pokemon import Pokemon
 from src.models.entities.pokemons_entity import PokemonsEntity
 from src.models.settings.connection import DBConnectionHandler
 
+column_map = {
+    "id": PokemonsEntity.pokemon_id,
+    "name": PokemonsEntity.pkn_name,
+}
+
 
 class PokemonsRepository:
     def insert_pokemon(self, pokemon: Pokemon) -> None:
@@ -24,11 +29,6 @@ class PokemonsRepository:
                 raise e
 
     def select_pokemon(self, by: str, value: str) -> Pokemon:
-        column_map = {
-            "id": PokemonsEntity.pokemon_id,
-            "name": PokemonsEntity.pkn_name,
-        }
-
         if by not in column_map:
             raise ValueError(f"Invalid argument: {by}")
 
@@ -56,6 +56,19 @@ class PokemonsRepository:
             try:
                 pokemons = db.session.query(PokemonsEntity).all()
                 return pokemons
+            except Exception as e:
+                db.session.rollback()
+                raise e
+
+    def delete_pokemon(self, by: str, value: str) -> None:
+        with DBConnectionHandler() as db:
+            try:
+                (
+                    db.session.query(PokemonsEntity)
+                    .filter(column_map[by] == value)
+                    .delete()
+                )
+                db.session.commit()
             except Exception as e:
                 db.session.rollback()
                 raise e
