@@ -17,8 +17,8 @@ connection = db_connection_handler.get_engine().connect()
 @pytest.mark.skip(reason="sensitive test")
 def test_insert_pokemon_with_real_mysql():
     pokemon = Pokemon(
-        pokemon_id=1,
-        pkn_name="Bulbasaur",
+        pokemon_id=9999,
+        pkn_name="Pokemon_Spy_1",
         type_1="Grass",
         type_2="Poison",
         generation=1,
@@ -44,16 +44,16 @@ def test_insert_pokemon_with_real_mysql():
 def test_select_pokemon_with_real_mysql():
     repo = PokemonsRepository()
     mock_pokemon_1 = Pokemon(
-        pokemon_id=1,
-        pkn_name="Bulbasaur",
+        pokemon_id=9998,
+        pkn_name="Pokemon_Spy_1",
         type_1="Grass",
         type_2="Poison",
         generation=1,
         is_legendary=0,
     )
     mock_pokemon_2 = Pokemon(
-        pokemon_id=2,
-        pkn_name="Ivysaur",
+        pokemon_id=9999,
+        pkn_name="Pokemon_Spy_2",
         type_1="Grass",
         type_2="Poison",
         generation=1,
@@ -62,10 +62,10 @@ def test_select_pokemon_with_real_mysql():
     repo.insert_pokemon(mock_pokemon_1)
     repo.insert_pokemon(mock_pokemon_2)
 
-    pkn_id_1 = repo.select_pokemon("id", "1")
-    pkn_name_1 = repo.select_pokemon("name", "Bulbasaur")
-    pkn_id_2 = repo.select_pokemon(By.ID, "2")
-    pkn_name_2 = repo.select_pokemon(By.NAME, "Ivysaur")
+    pkn_id_1 = repo.select_pokemon("id", "9998")
+    pkn_name_1 = repo.select_pokemon("name", "Pokemon_Spy_1")
+    pkn_id_2 = repo.select_pokemon(By.ID, "9999")
+    pkn_name_2 = repo.select_pokemon(By.NAME, "Pokemon_Spy_2")
 
     assert isinstance(pkn_id_1, Pokemon)
     assert isinstance(pkn_name_1, Pokemon)
@@ -86,29 +86,50 @@ def test_select_all_pokemons_with_real_mysql():
     ids = []
     for id in range(5):
         pokemon = Pokemon(
-            pokemon_id=id,
-            pkn_name="Bulbasaur",
+            pokemon_id=id + 9000,
+            pkn_name=f"Pokemon_Spy_{id}",
             type_1="Grass",
             type_2="Poison",
             generation=1,
             is_legendary=0,
         )
         repo.insert_pokemon(pokemon)
-        ids.append(id)
+        ids.append(id + 9000)
 
     response = repo.select_all_pokemons()
 
     assert isinstance(response, List)
     assert len(response) == len(ids)
     for id in ids:
-        assert response[id].pokemon_id == id
-        assert response[id].pkn_name == pokemon.pkn_name
-        assert response[id].type_1 == pokemon.type_1
-        assert response[id].type_2 == pokemon.type_2
-        assert response[id].generation == int(pokemon.generation)
-        assert response[id].is_legendary == int(pokemon.is_legendary)
+        assert response[id - 9000].pokemon_id == id
+        assert response[id - 9000].pkn_name == f"Pokemon_Spy_{id - 9000}"
+        assert response[id - 9000].type_1 == pokemon.type_1
+        assert response[id - 9000].type_2 == pokemon.type_2
+        assert response[id - 9000].generation == int(pokemon.generation)
+        assert response[id - 9000].is_legendary == int(pokemon.is_legendary)
 
     __data_reset(ids)
+
+
+@pytest.mark.skip(reason="sensitive test")
+def test_delete_pokemon():
+    mock_pokemon = Pokemon(
+        pokemon_id=9999,
+        pkn_name="Pokemon_Spy",
+        type_1="Grass",
+        type_2="Poison",
+        generation=1,
+        is_legendary=0,
+    )
+    repo = PokemonsRepository()
+    repo.insert_pokemon(mock_pokemon)
+    repo.delete_pokemon(By.ID, mock_pokemon.pokemon_id)
+
+    try:
+        repo.select_pokemon(By.ID, mock_pokemon.pokemon_id)
+        assert False, "Expected exception no raised"
+    except Exception as e:
+        assert str(e) == "'NoneType' object has no attribute 'pokemon_id'"
 
 
 def __data_reset(ids):
