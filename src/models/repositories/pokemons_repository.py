@@ -61,6 +61,9 @@ class PokemonsRepository:
                 raise e
 
     def delete_pokemon(self, by: str, value: str) -> None:
+        if by not in column_map:
+            raise ValueError(f"Invalid argument: {by}")
+
         with DBConnectionHandler() as db:
             try:
                 (

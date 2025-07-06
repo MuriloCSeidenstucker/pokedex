@@ -230,3 +230,68 @@ def test_select_all_pokemons_error(mocker: MockerFixture):
     mock_session.query.assert_called_once_with(PokemonsEntity)
     mock_query.all.assert_called_once()
     mock_session.rollback.assert_called_once()
+
+
+def test_delete_pokemon(mocker: MockerFixture):
+    mock_filter = mocker.MagicMock()
+    mock_filter.delete = mocker.MagicMock()
+    mock_query = mocker.MagicMock()
+    mock_query.filter.return_value = mock_filter
+    mock_session = mocker.MagicMock()
+    mock_session.query.return_value = mock_query
+    mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
+    mock_db_handler = mocker.MagicMock()
+    mock_db_handler.__enter__.return_value = mock_db_handler
+    mock_db_handler.session = mock_session
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler",
+        return_value=mock_db_handler,
+    )
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler.sqlalchemy.orm.sessionmaker",
+        return_value=mock_sessionmaker,
+    )
+
+    repo = PokemonsRepository()
+    repo.delete_pokemon(By.ID, "9999")
+
+    mock_session.query.assert_called_once_with(PokemonsEntity)
+    mock_query.filter.assert_called_once()
+    mock_filter.delete.assert_called_once()
+
+
+def test_delete_pokemon_by_error():
+    repo = PokemonsRepository()
+    try:
+        repo.delete_pokemon("pkn_name", "Bulbasaur")
+        assert False, "Expected exception not raised"
+    except Exception as e:
+        assert str(e) == "Invalid argument: pkn_name"
+
+
+def test_delete_pokemon_error(mocker: MockerFixture):
+    mock_filter = mocker.MagicMock()
+    mock_filter.delete.side_effect = Exception("NotFound")
+    mock_query = mocker.MagicMock()
+    mock_query.filter.return_value = mock_filter
+    mock_session = mocker.MagicMock()
+    mock_session.query.return_value = mock_query
+    mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
+    mock_db_handler = mocker.MagicMock()
+    mock_db_handler.__enter__.return_value = mock_db_handler
+    mock_db_handler.session = mock_session
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler",
+        return_value=mock_db_handler,
+    )
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler.sqlalchemy.orm.sessionmaker",
+        return_value=mock_sessionmaker,
+    )
+
+    repo = PokemonsRepository()
+    try:
+        repo.delete_pokemon("name", "Bulbasaur")
+        assert False, "Expected exception not raised"
+    except Exception as e:
+        assert str(e) == "NotFound"
