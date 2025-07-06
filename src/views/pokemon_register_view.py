@@ -31,9 +31,6 @@ class PokemonRegisterView:
         return new_pokemon_info
 
     def registry_pokemon_success(self, message: Dict) -> None:
-
-        self.__validate_fields(message)
-
         os.system("cls||clear")
 
         is_legendary = "Sim" if message["attributes"]["is_legendary"] == "1" else "Não"
@@ -53,10 +50,6 @@ class PokemonRegisterView:
         console.print(success_message)
 
     def registry_pokemon_fail(self, error: str) -> None:
-
-        if not isinstance(error, str):
-            raise Exception("Expected type: 'str'")
-
         os.system("cls||clear")
 
         fail_message = f"""
@@ -65,37 +58,3 @@ class PokemonRegisterView:
             Erro: { error }
         """
         console.print(fail_message)
-
-    def __validate_fields(self, field: Dict) -> None:
-        if not isinstance(field, Dict):
-            raise Exception("Expected type: 'Dict'")
-
-        if "type" not in field:
-            raise Exception("Required key missing: 'type'")
-
-        if "count" not in field:
-            raise Exception("Required key missing: 'count'")
-
-        if "attributes" not in field:
-            raise Exception("Required key missing: 'attributes'")
-
-        if not isinstance(field["attributes"], Dict):
-            raise Exception("Expected value type for 'attributes' key: 'Dict'")
-
-        if "pokemon_id" not in field["attributes"]:
-            raise Exception("Required key missing in attributes dict: 'pokemon_id'")
-
-        if "pkn_name" not in field["attributes"]:
-            raise Exception("Required key missing in attributes dict: 'pkn_name'")
-
-        if "type_1" not in field["attributes"]:
-            raise Exception("Required key missing in attributes dict: 'type_1'")
-
-        if "type_2" not in field["attributes"]:
-            raise Exception("Required key missing in attributes dict: 'type_2'")
-
-        if "generation" not in field["attributes"]:
-            raise Exception("Required key missing in attributes dict: 'generation'")
-
-        if "is_legendary" not in field["attributes"]:
-            raise Exception("Required key missing in attributes dict: 'is_legendary'")

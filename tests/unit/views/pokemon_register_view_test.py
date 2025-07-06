@@ -3,7 +3,7 @@
 from typing import Any
 from unittest.mock import MagicMock
 
-from pytest import mark
+from pytest_mock import MockerFixture
 
 from src.views.pokemon_register_view import PokemonRegisterView
 
@@ -36,7 +36,7 @@ def fake_input(prompt: str) -> str:
     return return_value
 
 
-def test_registry_pokemon_view(mocker):
+def test_registry_pokemon_view(mocker: MockerFixture):
     mocker.patch("os.system", side_effect=fake_io_system)
     mocker.patch("rich.console.Console.print", side_effect=fake_print)
     spy: MagicMock = mocker.patch("rich.console.Console.input", side_effect=fake_input)
@@ -86,118 +86,6 @@ def test_registry_pokemon_success(mocker):
     assert spy.called
 
 
-@mark.parametrize(
-    "message,expected",
-    [
-        ("message", "Expected type: 'Dict'"),
-        (
-            {
-                "error_type": "Spy",
-                "count": 1,
-                "attributes": {"name": "Pokemon_Spy", "type": "PTipo_Spy"},
-            },
-            "Required key missing: 'type'",
-        ),
-        (
-            {
-                "type": "Spy",
-                "error_count": 1,
-                "attributes": {"name": "Pokemon_Spy", "type": "PTipo_Spy"},
-            },
-            "Required key missing: 'count'",
-        ),
-        (
-            {
-                "type": "Spy",
-                "count": 1,
-                "error_attributes": {"name": "Pokemon_Spy", "type": "PTipo_Spy"},
-            },
-            "Required key missing: 'attributes'",
-        ),
-        (
-            {"type": "Spy", "count": 1, "attributes": "string"},
-            "Expected value type for 'attributes' key: 'Dict'",
-        ),
-        (
-            {
-                "type": "Spy",
-                "count": 1,
-                "attributes": {"error_id": "1"},
-            },
-            "Required key missing in attributes dict: 'pokemon_id'",
-        ),
-        (
-            {
-                "type": "Spy",
-                "count": 1,
-                "attributes": {"pokemon_id": "1", "error_name": "Pokemon_Spy"},
-            },
-            "Required key missing in attributes dict: 'pkn_name'",
-        ),
-        (
-            {
-                "type": "Spy",
-                "count": 1,
-                "attributes": {
-                    "pokemon_id": "1",
-                    "pkn_name": "Pokemon_Spy",
-                    "error_type": "PTipo_Spy",
-                },
-            },
-            "Required key missing in attributes dict: 'type_1'",
-        ),
-        (
-            {
-                "type": "Spy",
-                "count": 1,
-                "attributes": {
-                    "pokemon_id": "1",
-                    "pkn_name": "Pokemon_Spy",
-                    "type_1": "Pkn_Type_1",
-                    "error_type": "",
-                },
-            },
-            "Required key missing in attributes dict: 'type_2'",
-        ),
-        (
-            {
-                "type": "Spy",
-                "count": 1,
-                "attributes": {
-                    "pokemon_id": "1",
-                    "pkn_name": "Pokemon_Spy",
-                    "type_1": "Pkn_Type_1",
-                    "type_2": "Pkn_Type_2",
-                    "error_generation": "",
-                },
-            },
-            "Required key missing in attributes dict: 'generation'",
-        ),
-        (
-            {
-                "type": "Spy",
-                "count": 1,
-                "attributes": {
-                    "pokemon_id": "1",
-                    "pkn_name": "Pokemon_Spy",
-                    "type_1": "Pkn_Type_1",
-                    "type_2": "Pkn_Type_2",
-                    "generation": "1",
-                    "error_legendary": "",
-                },
-            },
-            "Required key missing in attributes dict: 'is_legendary'",
-        ),
-    ],
-)
-def test_registry_pokemon_success_validate_errors(message, expected):
-
-    try:
-        view.registry_pokemon_success(message)
-    except Exception as e:
-        assert str(e) == expected
-
-
 def test_registry_pokemon_fail(mocker):
     mocker.patch("os.system", side_effect=fake_io_system)
     spy: MagicMock = mocker.patch("rich.console.Console.print", side_effect=fake_print)
@@ -205,11 +93,3 @@ def test_registry_pokemon_fail(mocker):
     view.registry_pokemon_fail("test")
 
     assert spy.called
-
-
-def test_registry_pokemon_fail_validate_errors():
-
-    try:
-        view.registry_pokemon_fail(None)
-    except Exception as e:
-        assert str(e) == "Expected type: 'str'"
