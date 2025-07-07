@@ -5,4 +5,6 @@ Bem-vindo ao sistema de gerenciamento da Pokédex! Selecione uma opção abaixo 
 - **Cadastrar Pokémon** - Opção 1
 - **Buscar Pokémon** - Opção 2
 - **Mostrar Todos os Pokémon** - Opção 3
-- **Sair do Sistema** - Opção 5
+- **Atualizar Pokémon** - Opção 4
+- **Deletar Pokémon** - Opção 5
+- **Sair do Sistema** - Opção 6
