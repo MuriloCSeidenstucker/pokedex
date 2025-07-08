@@ -1,7 +1,25 @@
 import pytest
 from pytest_mock import MockerFixture
 
-from src.main.process_handle import __display_menu_and_get_command, __execute_command
+from src.main.process_handle import (
+    __display_menu_and_get_command,
+    __execute_command,
+    start,
+)
+
+
+def test_start(mocker: MockerFixture):
+    mock_display_menu = mocker.patch(
+        "src.main.process_handle.__display_menu_and_get_command", return_value="6"
+    )
+    mock_execute_command = mocker.patch(
+        "src.main.process_handle.__execute_command", return_value=False
+    )
+
+    start()
+
+    mock_display_menu.assert_called_once()
+    mock_execute_command.assert_called_once_with("6")
 
 
 def test_display_menu_and_get_command(mocker: MockerFixture):
