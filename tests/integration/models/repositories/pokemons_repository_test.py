@@ -123,8 +123,10 @@ def test_delete_pokemon():
     )
     repo = PokemonsRepository()
     repo.insert_pokemon(mock_pokemon)
-    repo.delete_pokemon(By.ID, mock_pokemon.pokemon_id)
+    result = repo.delete_pokemon(By.ID, mock_pokemon.pokemon_id)
 
+    assert isinstance(result, Pokemon)
+    assert result == mock_pokemon
     try:
         repo.select_pokemon(By.ID, mock_pokemon.pokemon_id)
         assert False, "Expected exception no raised"
