@@ -1,5 +1,7 @@
 from typing import List
 
+from sqlalchemy.exc import NoResultFound
+
 from src.common.pokemon import Pokemon
 from src.models.entities.pokemons_entity import PokemonsEntity
 from src.models.settings.connection import DBConnectionHandler
@@ -60,18 +62,37 @@ class PokemonsRepository:
                 db.session.rollback()
                 raise e
 
-    def delete_pokemon(self, by: str, value: str) -> None:
+    def delete_pokemon(self, by: str, value: str) -> Pokemon:
         if by not in column_map:
             raise ValueError(f"Invalid argument: {by}")
 
         with DBConnectionHandler() as db:
             try:
+                pokemon = (
+                    db.session.query(PokemonsEntity)
+                    .filter(column_map[by] == value)
+                    .one_or_none()
+                )
+
+                if pokemon is None:
+                    raise NoResultFound(f"No Pokemon found with {by} = {value}")
+
+                pkn_data = Pokemon(
+                    pokemon_id=pokemon.pokemon_id,
+                    pkn_name=pokemon.pkn_name,
+                    type_1=pokemon.type_1,
+                    type_2=pokemon.type_2,
+                    generation=pokemon.generation,
+                    is_legendary=pokemon.is_legendary,
+                )
+
                 (
                     db.session.query(PokemonsEntity)
                     .filter(column_map[by] == value)
                     .delete()
                 )
                 db.session.commit()
+                return pkn_data
             except Exception as e:
                 db.session.rollback()
                 raise e

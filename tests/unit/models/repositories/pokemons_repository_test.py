@@ -235,6 +235,7 @@ def test_select_all_pokemons_error(mocker: MockerFixture):
 def test_delete_pokemon(mocker: MockerFixture):
     mock_filter = mocker.MagicMock()
     mock_filter.delete = mocker.MagicMock()
+    mock_filter.one_or_none = mocker.MagicMock()
     mock_query = mocker.MagicMock()
     mock_query.filter.return_value = mock_filter
     mock_session = mocker.MagicMock()
@@ -255,9 +256,11 @@ def test_delete_pokemon(mocker: MockerFixture):
     repo = PokemonsRepository()
     repo.delete_pokemon(By.ID, "9999")
 
-    mock_session.query.assert_called_once_with(PokemonsEntity)
-    mock_query.filter.assert_called_once()
+    assert mock_session.query.call_count == 2
+    mock_session.query.assert_called_with(PokemonsEntity)
+    assert mock_query.filter.call_count == 2
     mock_filter.delete.assert_called_once()
+    mock_filter.one_or_none.assert_called_once()
 
 
 def test_delete_pokemon_by_error():
