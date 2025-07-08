@@ -285,7 +285,7 @@ def test_delete_pokemon_by_error():
 
 def test_delete_pokemon_error(mocker: MockerFixture):
     mock_filter = mocker.MagicMock()
-    mock_filter.delete.side_effect = Exception("NotFound")
+    mock_filter.one_or_none.return_value = None
     mock_query = mocker.MagicMock()
     mock_query.filter.return_value = mock_filter
     mock_session = mocker.MagicMock()
@@ -308,4 +308,4 @@ def test_delete_pokemon_error(mocker: MockerFixture):
         repo.delete_pokemon("name", "Bulbasaur")
         assert False, "Expected exception not raised"
     except Exception as e:
-        assert str(e) == "NotFound"
+        assert str(e) == "No Pokemon found with name = Bulbasaur"
