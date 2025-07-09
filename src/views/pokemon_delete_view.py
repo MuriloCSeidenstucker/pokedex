@@ -28,18 +28,18 @@ class PokemonDeleteView:
     def delete_pokemon_success(self, message: Dict) -> None:
         os.system("cls||clear")
 
-        is_legendary = "Sim" if message["attributes"]["is_legendary"] == "1" else "Não"
+        is_legendary = "Sim" if message["attributes"].is_legendary == "1" else "Não"
         success_message = f"""
             Pokemon removido com sucesso!
 
             Tipo: { message["type"] }
             Registros: { message["count"] }
             Infos:
-                Número: { message["attributes"]["pokemon_id"] }
-                Nome: { message["attributes"]["pkn_name"] }
-                Tipo Primário: { message["attributes"]["type_1"] }
-                Tipo Secundário: { message["attributes"]["type_2"] }
-                Geração: { message["attributes"]["generation"] }
+                Número: { message["attributes"].pokemon_id }
+                Nome: { message["attributes"].pkn_name }
+                Tipo Primário: { message["attributes"].type_1 }
+                Tipo Secundário: { message["attributes"].type_2 }
+                Geração: { message["attributes"].generation }
                 Lendário: { is_legendary }
         """
         console.print(success_message)

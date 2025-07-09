@@ -1,6 +1,7 @@
 import pytest
 from pytest_mock import MockerFixture
 
+from src.common.pokemon import Pokemon
 from src.views.pokemon_delete_view import PokemonDeleteView
 
 
@@ -34,14 +35,14 @@ def test_delete_pokemon_success(mocker: MockerFixture):
     mock_message = {
         "type": "Spy",
         "count": 1,
-        "attributes": {
-            "pokemon_id": "1",
-            "pkn_name": "Pokemon_Spy",
-            "type_1": "Pkn_Type_1",
-            "type_2": "Pkn_Type_2",
-            "generation": "1",
-            "is_legendary": "0",
-        },
+        "attributes": Pokemon(
+            pokemon_id=1,
+            pkn_name="Pokemon_Spy",
+            type_1="Pkn_Type_1",
+            type_2="Pkn_Type_2",
+            generation=1,
+            is_legendary=0,
+        ),
     }
 
     view = PokemonDeleteView()
