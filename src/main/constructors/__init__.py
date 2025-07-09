@@ -1,3 +1,4 @@
+from src.main.constructors.pokemon_delete_constructor import pokemon_delete_constructor
 from src.main.constructors.pokemon_find_all_constructor import (
     pokemon_find_all_constructor,
 )
