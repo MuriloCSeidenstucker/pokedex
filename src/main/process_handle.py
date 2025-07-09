@@ -4,6 +4,7 @@ from typing import Optional
 from rich.console import Console
 
 from src.main.constructors import (
+    pokemon_delete_constructor,
     pokemon_find_all_constructor,
     pokemon_register_constructor,
 )
@@ -40,7 +41,7 @@ def __execute_command(command: Optional[str]) -> bool:
         Command.SEARCH_POKEMON.value: lambda: console.print("Buscar Pokemon"),
         Command.LIST_ALL_POKEMON.value: pokemon_find_all_constructor,
         Command.UPDATE_POKEMON.value: lambda: console.print("Atualizar pokemon"),
-        Command.DELETE_POKEMON.value: lambda: console.print("Deletar pokemon"),
+        Command.DELETE_POKEMON.value: pokemon_delete_constructor,
         Command.EXIT.value: lambda: False,
     }
 
