@@ -24,7 +24,7 @@ def test_find_all(mocker: MockerFixture):
         ),
     ]
     mock_repo = mocker.patch(
-        "src.controllers.pokemon_find_all_controller.PokemonsRepository"
+        "src.models.repositories.pokemons_repository.PokemonsRepository"
     )
     mock_repo.select_all_pokemons.return_value = mock_response
 
@@ -42,7 +42,7 @@ def test_find_all(mocker: MockerFixture):
 
 def test_find_all_error(mocker: MockerFixture):
     mock_repo = mocker.patch(
-        "src.controllers.pokemon_find_all_controller.PokemonsRepository"
+        "src.models.repositories.pokemons_repository.PokemonsRepository"
     )
     mock_repo.select_all_pokemons.return_value = None
 

@@ -30,7 +30,7 @@ class PokemonUpdateController:
 
         if not isinstance(pokemon_data, Dict):
             raise Exception(
-                f"Invalid argument type: {type(pokemon_data)}. Must be a dictionary"
+                f"Invalid argument type: {type(pokemon_data).__name__}. Must be a dictionary"
             )
 
         try:
