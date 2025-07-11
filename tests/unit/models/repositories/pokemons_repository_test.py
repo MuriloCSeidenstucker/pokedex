@@ -232,6 +232,96 @@ def test_select_all_pokemons_error(mocker: MockerFixture):
     mock_session.rollback.assert_called_once()
 
 
+def test_update_pokemon(mocker: MockerFixture):
+    mock_updated_pokemon = Pokemon(
+        pokemon_id=9999,
+        pkn_name="Pokemon_Spy",
+        type_1="Eletric",
+        type_2="",
+        generation=9,
+        is_legendary=1,
+    )
+    expected_result = {
+        "pokemon_id": 9999,
+        "pkn_name": "Pokemon_Spy",
+        "type_1": "Eletric",
+        "type_2": "",
+        "generation": 9,
+        "is_legendary": 1,
+    }
+    mock_filter = mocker.MagicMock()
+    mock_filter.update = mocker.MagicMock()
+    mock_query = mocker.MagicMock()
+    mock_query.filter.return_value = mock_filter
+    mock_session = mocker.MagicMock()
+    mock_session.query.return_value = mock_query
+    mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
+    mock_db_handler = mocker.MagicMock()
+    mock_db_handler.__enter__.return_value = mock_db_handler
+    mock_db_handler.session = mock_session
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler",
+        return_value=mock_db_handler,
+    )
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler.sqlalchemy.orm.sessionmaker",
+        return_value=mock_sessionmaker,
+    )
+
+    repo = PokemonsRepository()
+    repo.update_pokemon(By.ID, 9999, mock_updated_pokemon)
+
+    mock_session.query.assert_called_once_with(PokemonsEntity)
+    mock_query.filter.assert_called_once()
+    mock_filter.update.assert_called_once_with(expected_result)
+
+
+def test_update_pokemon_by_error():
+    repo = PokemonsRepository()
+    try:
+        repo.update_pokemon("pkn_name", "Bulbasaur", "mock_pokemon")
+        assert False, "Expected exception not raised"
+    except Exception as e:
+        assert str(e) == "Invalid argument: pkn_name"
+
+
+def test_update_pokemon_error(mocker: MockerFixture):
+    mock_updated_pokemon = Pokemon(
+        pokemon_id=9999,
+        pkn_name="Pokemon_Spy",
+        type_1="Eletric",
+        type_2="",
+        generation=9,
+        is_legendary=1,
+    )
+    mock_filter = mocker.MagicMock()
+    mock_filter.update = mocker.MagicMock()
+    mock_filter.update.side_effect = Exception("Unexpected error")
+    mock_query = mocker.MagicMock()
+    mock_query.filter.return_value = mock_filter
+    mock_session = mocker.MagicMock()
+    mock_session.query.return_value = mock_query
+    mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
+    mock_db_handler = mocker.MagicMock()
+    mock_db_handler.__enter__.return_value = mock_db_handler
+    mock_db_handler.session = mock_session
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler",
+        return_value=mock_db_handler,
+    )
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler.sqlalchemy.orm.sessionmaker",
+        return_value=mock_sessionmaker,
+    )
+
+    repo = PokemonsRepository()
+    try:
+        repo.update_pokemon(By.ID, 9999, mock_updated_pokemon)
+        assert False, "Expected exception not raised"
+    except Exception as e:
+        assert str(e) == "Unexpected error"
+
+
 def test_delete_pokemon(mocker: MockerFixture):
     expected_pokemon = Pokemon(
         pokemon_id=1,
@@ -263,7 +353,7 @@ def test_delete_pokemon(mocker: MockerFixture):
     )
 
     repo = PokemonsRepository()
-    result = repo.delete_pokemon(By.ID, "9999")
+    result = repo.delete_pokemon(By.ID, 9999)
 
     assert mock_session.query.call_count == 2
     mock_session.query.assert_called_with(PokemonsEntity)
