@@ -112,6 +112,37 @@ def test_select_all_pokemons_with_real_mysql():
 
 
 @pytest.mark.skip(reason="sensitive test")
+def test_update_pokemon():
+    mock_updated_pokemon = Pokemon(
+        pokemon_id=9999,
+        pkn_name="Pokemon_Spy",
+        type_1="Eletric",
+        type_2="",
+        generation=9,
+        is_legendary=1,
+    )
+    mock_pokemon = Pokemon(
+        pokemon_id=9999,
+        pkn_name="Pokemon_Spy",
+        type_1="Grass",
+        type_2="Poison",
+        generation=1,
+        is_legendary=0,
+    )
+    repo = PokemonsRepository()
+    repo.insert_pokemon(mock_pokemon)
+    before_update = repo.select_pokemon(By.ID, 9999)
+    repo.update_pokemon(By.ID, 9999, mock_updated_pokemon)
+    after_update = repo.select_pokemon(By.ID, 9999)
+
+    assert before_update == mock_pokemon
+    assert after_update == mock_updated_pokemon
+    assert before_update != after_update
+
+    repo.delete_pokemon(By.ID, 9999)
+
+
+@pytest.mark.skip(reason="sensitive test")
 def test_delete_pokemon():
     mock_pokemon = Pokemon(
         pokemon_id=9999,

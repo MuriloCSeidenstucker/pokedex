@@ -68,14 +68,14 @@ class PokemonsRepository:
 
         with DBConnectionHandler() as db:
             try:
-                updated_data = PokemonsEntity(
-                    pokemon_id=pokemon.pokemon_id,
-                    pkn_name=pokemon.pkn_name,
-                    type_1=pokemon.type_1,
-                    type_2=pokemon.type_2,
-                    generation=pokemon.generation,
-                    is_legendary=pokemon.is_legendary,
-                )
+                updated_data = {
+                    "pokemon_id": pokemon.pokemon_id,
+                    "pkn_name": pokemon.pkn_name,
+                    "type_1": pokemon.type_1,
+                    "type_2": pokemon.type_2,
+                    "generation": pokemon.generation,
+                    "is_legendary": pokemon.is_legendary,
+                }
                 (
                     db.session.query(PokemonsEntity)
                     .filter(column_map[by] == value)
