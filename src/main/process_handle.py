@@ -6,6 +6,7 @@ from rich.console import Console
 from src.main.constructors import (
     pokemon_delete_constructor,
     pokemon_find_all_constructor,
+    pokemon_find_constructor,
     pokemon_register_constructor,
 )
 
@@ -38,7 +39,7 @@ def __display_menu_and_get_command() -> Optional[str]:
 def __execute_command(command: Optional[str]) -> bool:
     command_map = {
         Command.REGISTER_POKEMON.value: pokemon_register_constructor,
-        Command.SEARCH_POKEMON.value: lambda: console.print("Buscar Pokemon"),
+        Command.SEARCH_POKEMON.value: pokemon_find_constructor,
         Command.LIST_ALL_POKEMON.value: pokemon_find_all_constructor,
         Command.UPDATE_POKEMON.value: lambda: console.print("Atualizar pokemon"),
         Command.DELETE_POKEMON.value: pokemon_delete_constructor,
