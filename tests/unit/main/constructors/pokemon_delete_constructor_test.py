@@ -33,7 +33,7 @@ def test_pokemon_delete_constructor_success(mocker: MockerFixture):
     mock_view.delete_pokemon_success.assert_called_once_with(mock_response["message"])
 
 
-def test_test_pokemon_delete_constructor_fail(mocker: MockerFixture):
+def test_pokemon_delete_constructor_fail(mocker: MockerFixture):
     mocker.patch("src.main.constructors.pokemon_delete_constructor.PokemonsRepository")
 
     mock_request = {"by": "id", "value": "1"}
