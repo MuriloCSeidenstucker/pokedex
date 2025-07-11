@@ -37,4 +37,4 @@ class PokemonFindController:
         return pokemon
 
     def __format_response(self, pokemon: Pokemon) -> Dict:
-        return {"count": "1", "type": "Pokemon", "attributes": pokemon}
+        return {"count": 1, "type": "Pokemon", "attributes": pokemon}
