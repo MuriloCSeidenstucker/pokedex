@@ -32,12 +32,12 @@ class PokemonRegisterController:
 
     def __insert_pokemon(self, new_pokemon_info: Dict) -> None:
         pokemon = Pokemon(
-            pokemon_id=new_pokemon_info["pokemon_id"],
+            pokemon_id=int(new_pokemon_info["pokemon_id"]),
             pkn_name=new_pokemon_info["pkn_name"],
             type_1=new_pokemon_info["type_1"],
             type_2=new_pokemon_info["type_2"],
-            generation=new_pokemon_info["generation"],
-            is_legendary=new_pokemon_info["is_legendary"],
+            generation=int(new_pokemon_info["generation"]),
+            is_legendary=int(new_pokemon_info["is_legendary"]),
         )
 
         self.__pokemon_repository.insert_pokemon(pokemon)
