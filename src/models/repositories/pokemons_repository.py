@@ -62,6 +62,30 @@ class PokemonsRepository:
                 db.session.rollback()
                 raise e
 
+    def update_pokemon(self, by: str, value: str, pokemon: Pokemon) -> None:
+        if by not in column_map:
+            raise ValueError(f"Invalid argument: {by}")
+
+        with DBConnectionHandler() as db:
+            try:
+                updated_data = PokemonsEntity(
+                    pokemon_id=pokemon.pokemon_id,
+                    pkn_name=pokemon.pkn_name,
+                    type_1=pokemon.type_1,
+                    type_2=pokemon.type_2,
+                    generation=pokemon.generation,
+                    is_legendary=pokemon.is_legendary,
+                )
+                (
+                    db.session.query(PokemonsEntity)
+                    .filter(column_map[by] == value)
+                    .update(updated_data)
+                )
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                raise e
+
     def delete_pokemon(self, by: str, value: str) -> Pokemon:
         if by not in column_map:
             raise ValueError(f"Invalid argument: {by}")
