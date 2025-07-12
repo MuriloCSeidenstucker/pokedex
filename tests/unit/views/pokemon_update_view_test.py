@@ -35,7 +35,7 @@ def test_pokemon_update_view(mocker: MockerFixture):
     assert mock_input.call_count == 8
     assert request["by"] == "id"
     assert request["value"] == mock_inputs[1]
-    assert request["pokemon"] == expected_pokemon
+    assert request["pokemon_data"] == expected_pokemon
 
 
 def test_pokemon_update_success(mocker: MockerFixture):

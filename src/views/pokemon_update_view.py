@@ -39,7 +39,7 @@ class PokemonUpdateView:
             "is_legendary": is_legendary,
         }
 
-        return {"by": by, "value": value, "pokemon": updated_pokemon_info}
+        return {"by": by, "value": value, "pokemon_data": updated_pokemon_info}
 
     def pokemon_update_success(self, message: Dict) -> None:
         os.system("cls||clear")
