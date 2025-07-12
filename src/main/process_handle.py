@@ -8,6 +8,7 @@ from src.main.constructors import (
     pokemon_find_all_constructor,
     pokemon_find_constructor,
     pokemon_register_constructor,
+    pokemon_update_constructor,
 )
 
 from .constructors.introduction_process import introduction_process
@@ -41,7 +42,7 @@ def __execute_command(command: Optional[str]) -> bool:
         Command.REGISTER_POKEMON.value: pokemon_register_constructor,
         Command.SEARCH_POKEMON.value: pokemon_find_constructor,
         Command.LIST_ALL_POKEMON.value: pokemon_find_all_constructor,
-        Command.UPDATE_POKEMON.value: lambda: console.print("Atualizar pokemon"),
+        Command.UPDATE_POKEMON.value: pokemon_update_constructor,
         Command.DELETE_POKEMON.value: pokemon_delete_constructor,
         Command.EXIT.value: lambda: False,
     }
