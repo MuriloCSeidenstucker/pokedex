@@ -6,3 +6,4 @@ from src.main.constructors.pokemon_find_constructor import pokemon_find_construc
 from src.main.constructors.pokemon_register_constructor import (
     pokemon_register_constructor,
 )
+from src.main.constructors.pokemon_update_constructor import pokemon_update_constructor
