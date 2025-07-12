@@ -68,6 +68,16 @@ class PokemonsRepository:
 
         with DBConnectionHandler() as db:
             try:
+
+                pokemon_check = (
+                    db.session.query(PokemonsEntity)
+                    .filter(column_map[by] == value)
+                    .one_or_none()
+                )
+
+                if pokemon_check is None:
+                    raise NoResultFound(f"No Pokemon found with {by} = {value}")
+
                 updated_data = {
                     "pokemon_id": pokemon.pokemon_id,
                     "pkn_name": pokemon.pkn_name,
@@ -76,6 +86,7 @@ class PokemonsRepository:
                     "generation": pokemon.generation,
                     "is_legendary": pokemon.is_legendary,
                 }
+
                 (
                     db.session.query(PokemonsEntity)
                     .filter(column_map[by] == value)

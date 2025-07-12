@@ -233,7 +233,7 @@ def test_select_all_pokemons_error(mocker: MockerFixture):
 
 
 def test_update_pokemon(mocker: MockerFixture):
-    mock_updated_pokemon = Pokemon(
+    mock_after_pokemon = Pokemon(
         pokemon_id=9999,
         pkn_name="Pokemon_Spy",
         type_1="Eletric",
@@ -251,6 +251,8 @@ def test_update_pokemon(mocker: MockerFixture):
     }
     mock_filter = mocker.MagicMock()
     mock_filter.update = mocker.MagicMock()
+    mock_filter.one_or_none = mocker.MagicMock()
+    mock_filter.one_or_none.return_value = mock_after_pokemon
     mock_query = mocker.MagicMock()
     mock_query.filter.return_value = mock_filter
     mock_session = mocker.MagicMock()
@@ -269,10 +271,13 @@ def test_update_pokemon(mocker: MockerFixture):
     )
 
     repo = PokemonsRepository()
-    repo.update_pokemon(By.ID, 9999, mock_updated_pokemon)
+    repo.update_pokemon(By.ID, 9999, mock_after_pokemon)
 
-    mock_session.query.assert_called_once_with(PokemonsEntity)
-    mock_query.filter.assert_called_once()
+    assert mock_session.query.call_count == 2
+    mock_session.query.assert_called_with(PokemonsEntity)
+    assert mock_query.filter.call_count == 2
+    mock_filter.update.assert_called_once()
+    mock_filter.one_or_none.assert_called_once()
     mock_filter.update.assert_called_once_with(expected_result)
 
 
@@ -296,7 +301,7 @@ def test_update_pokemon_error(mocker: MockerFixture):
     )
     mock_filter = mocker.MagicMock()
     mock_filter.update = mocker.MagicMock()
-    mock_filter.update.side_effect = Exception("Unexpected error")
+    mock_filter.one_or_none.return_value = None
     mock_query = mocker.MagicMock()
     mock_query.filter.return_value = mock_filter
     mock_session = mocker.MagicMock()
@@ -319,7 +324,7 @@ def test_update_pokemon_error(mocker: MockerFixture):
         repo.update_pokemon(By.ID, 9999, mock_updated_pokemon)
         assert False, "Expected exception not raised"
     except Exception as e:
-        assert str(e) == "Unexpected error"
+        assert str(e) == "No Pokemon found with id = 9999"
 
 
 def test_delete_pokemon(mocker: MockerFixture):
