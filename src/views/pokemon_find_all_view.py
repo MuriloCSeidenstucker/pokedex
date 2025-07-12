@@ -10,6 +10,8 @@ console = Console()
 
 class PokemonFindAllView:
     def find_all_pokemons_success(self, message: Dict) -> None:
+        os.system("cls||clear")
+
         table = Table(show_header=True, header_style="bold magenta", leading=1)
         table.add_column(
             "N°", style="dim", width=12, justify="center", vertical="middle"
