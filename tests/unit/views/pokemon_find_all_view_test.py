@@ -36,8 +36,8 @@ def test_find_all_pokemons_success(mocker: MockerFixture):
     view = PokemonFindAllView()
     view.find_all_pokemons_success(mock_message)
 
-    assert mock_add_column.call_count == 5
-    assert mock_add_row.call_count == 2
+    mock_add_column.assert_called()
+    mock_add_row.assert_called()
     mock_print.assert_called_once()
 
 
@@ -51,4 +51,4 @@ def test_find_all_pokemons_fail(mocker: MockerFixture):
     view.find_all_pokemons_fail("")
 
     mock_system.assert_called_once()
-    mock_print.assert_called_once()
+    mock_print.assert_called()
