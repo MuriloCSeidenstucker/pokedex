@@ -2,6 +2,7 @@ from typing import List
 
 from sqlalchemy.exc import NoResultFound
 
+from src.common.exceptions import PokemonNotFoundError
 from src.common.pokemon import Pokemon
 from src.models.entities.pokemons_entity import PokemonsEntity
 from src.models.settings.connection import DBConnectionHandler
@@ -41,6 +42,10 @@ class PokemonsRepository:
                     .filter(column_map[by] == value)
                     .first()
                 )
+
+                if not pokemon:
+                    raise PokemonNotFoundError("pokemon not found in repository")
+
                 return Pokemon(
                     pokemon_id=pokemon.pokemon_id,
                     pkn_name=pokemon.pkn_name,
