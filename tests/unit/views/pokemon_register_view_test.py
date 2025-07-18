@@ -1,95 +1,75 @@
-# pylint: disable=W0613:unused-argument
-
-from typing import Any
-from unittest.mock import MagicMock
+from typing import Dict
 
 from pytest_mock import MockerFixture
 
 from src.views.pokemon_register_view import PokemonRegisterView
 
-view = PokemonRegisterView()
-
-
-def fake_io_system(command: str) -> int:
-    return -1
-
-
-def fake_print(*objects: Any):
-    pass
-
-
-def fake_input(prompt: str) -> str:
-    return_value = ""
-    if prompt == "Determine o id do pokemon: ":
-        return_value = "9999"
-    elif prompt == "Determine o nome do pokemon: ":
-        return_value = "Pokemon_Spy"
-    elif prompt == "Determine o tipo primário do pokemon: ":
-        return_value = "Pkn_Type_1"
-    elif prompt == "Determine o tipo secundário do pokemon: ":
-        return_value = "Pkn_Type_2"
-    elif prompt == "Determine a geração do pokemon: ":
-        return_value = "1"
-    elif prompt == "Este pokemon é lendário? 1(Sim) 0(Não): ":
-        return_value = "0"
-
-    return return_value
-
 
 def test_registry_pokemon_view(mocker: MockerFixture):
-    mocker.patch("os.system", side_effect=fake_io_system)
-    mocker.patch("rich.console.Console.print", side_effect=fake_print)
-    spy: MagicMock = mocker.patch("rich.console.Console.input", side_effect=fake_input)
+    mock_os_system = mocker.patch("os.system")
+    mock_print = mocker.patch("rich.console.Console.print")
+    mock_inputs = ["1", "Bulbasaur", "Grass", "Poison", "1", "0"]
+    mock_prompt_ask = mocker.patch("rich.prompt.Prompt.ask", side_effect=mock_inputs)
+    mock_panel_fit = mocker.patch("rich.panel.Panel.fit")
 
-    result = view.registry_pokemon_view()
+    view = PokemonRegisterView()
+    request = view.registry_pokemon_view()
 
-    return_values = [fake_input(call.args[0]) for call in spy.mock_calls]
-
-    assert spy.called
-    assert spy.mock_calls == [
-        mocker.call("Determine o id do pokemon: "),
-        mocker.call("Determine o nome do pokemon: "),
-        mocker.call("Determine o tipo primário do pokemon: "),
-        mocker.call("Determine o tipo secundário do pokemon: "),
-        mocker.call("Determine a geração do pokemon: "),
-        mocker.call("Este pokemon é lendário? 1(Sim) 0(Não): "),
-    ]
-    expected = {
-        "pokemon_id": return_values[0],
-        "pkn_name": return_values[1],
-        "type_1": return_values[2],
-        "type_2": return_values[3],
-        "generation": return_values[4],
-        "is_legendary": return_values[5],
-    }
-    assert result == expected
+    mock_os_system.assert_called_once_with("cls||clear")
+    mock_print.assert_called_once()
+    mock_panel_fit.assert_called_once()
+    assert mock_prompt_ask.call_count == 6
+    assert isinstance(request, Dict)
+    assert request["pkn_name"] == mock_inputs[1]
 
 
-def test_registry_pokemon_success(mocker):
-    mocker.patch("os.system", side_effect=fake_io_system)
-    spy: MagicMock = mocker.patch("rich.console.Console.print", side_effect=fake_print)
-
-    message = {
+def test_registry_pokemon_success(mocker: MockerFixture):
+    mock_response = {
         "type": "Spy",
-        "count": 1,
+        "count": "1",
         "attributes": {
             "pokemon_id": "1",
-            "pkn_name": "Pokemon_Spy",
-            "type_1": "Pkn_Type_1",
-            "type_2": "Pkn_Type_2",
+            "pkn_name": "Bulbasaur",
+            "type_1": "Grass",
+            "type_2": "Poison",
             "generation": "1",
             "is_legendary": "0",
         },
     }
-    view.registry_pokemon_success(message)
+    mock_os_system = mocker.patch("os.system")
+    mock_add_column = mocker.MagicMock()
+    mocker.patch("rich.table.Table.add_column", side_effect=mock_add_column)
+    mock_add_row = mocker.MagicMock()
+    mocker.patch("rich.table.Table.add_row", side_effect=mock_add_row)
+    mock_panel_fit = mocker.patch("rich.panel.Panel.fit")
+    mock_print = mocker.patch("rich.console.Console.print")
 
-    assert spy.called
+    view = PokemonRegisterView()
+    view.registry_pokemon_success(mock_response)
+
+    mock_os_system.assert_called_once_with("cls||clear")
+    mock_panel_fit.assert_called_once()
+    mock_print.assert_called_once()
+    assert mock_add_column.call_count == 2
+    assert mock_add_row.call_count == 8
 
 
-def test_registry_pokemon_fail(mocker):
-    mocker.patch("os.system", side_effect=fake_io_system)
-    spy: MagicMock = mocker.patch("rich.console.Console.print", side_effect=fake_print)
+def test_registry_pokemon_fail(mocker: MockerFixture):
+    mock_error = {
+        "name": "spy error",
+        "status_code": -1,
+        "details": "foo",
+    }
+    mock_os_system = mocker.patch("os.system")
+    mock_add_row = mocker.MagicMock()
+    mocker.patch("rich.table.Table.add_row", side_effect=mock_add_row)
+    mock_print = mocker.patch("rich.console.Console.print")
+    mock_panel_fit = mocker.patch("rich.panel.Panel.fit")
 
-    view.registry_pokemon_fail("test")
+    view = PokemonRegisterView()
+    view.registry_pokemon_fail(mock_error)
 
-    assert spy.called
+    mock_os_system.assert_called_once_with("cls||clear")
+    mock_panel_fit.assert_called_once()
+    assert mock_add_row.call_count == 2
+    assert mock_print.call_count == 3
