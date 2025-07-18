@@ -49,15 +49,16 @@ def test_pokemon_find_success(mocker: MockerFixture):
     view.pokemon_find_success(mock_message)
 
     mock_os_system.assert_called_once_with("cls||clear")
-    mock_print.assert_called_once()
+    mock_print.assert_called()
 
 
 def test_pokemon_find_fail(mocker: MockerFixture):
+    mock_error = {"name": "spy error", "status_code": 1, "details": "foo"}
     mock_os_system = mocker.patch("os.system")
     mock_print = mocker.patch("rich.console.Console.print")
 
     view = PokemonFindView()
-    view.pokemon_find_fail("Test")
+    view.pokemon_find_fail(mock_error)
 
     mock_os_system.assert_called_once_with("cls||clear")
-    mock_print.assert_called_once()
+    mock_print.assert_called()

@@ -5,6 +5,7 @@ from typing import List
 from pytest_mock import MockerFixture
 
 from src.common.by import By
+from src.common.exceptions import PokemonNotFoundError
 from src.common.pokemon import Pokemon
 from src.models.entities.pokemons_entity import PokemonsEntity
 from src.models.repositories.pokemons_repository import PokemonsRepository
@@ -128,7 +129,7 @@ def test_select_pokemon_by_error():
 
 def test_select_pokemon_error(mocker: MockerFixture):
     mock_filter = mocker.MagicMock()
-    mock_filter.first.side_effect = Exception("NotFound")
+    mock_filter.first.return_value = None
     mock_query = mocker.MagicMock()
     mock_query.filter.return_value = mock_filter
     mock_session = mocker.MagicMock()
@@ -150,8 +151,8 @@ def test_select_pokemon_error(mocker: MockerFixture):
     try:
         repo.select_pokemon("name", "Bulbasaur")
         assert False, "Expected exception not raised"
-    except Exception as e:
-        assert str(e) == "NotFound"
+    except PokemonNotFoundError as e:
+        assert str(e) == "pokemon not found in repository"
 
 
 def test_select_all_pokemons(mocker: MockerFixture):

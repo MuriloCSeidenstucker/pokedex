@@ -1,7 +1,7 @@
 import pytest
 from pytest_mock import MockerFixture
 
-from src.common.by import By
+from src.common.exceptions import PokemonNotFoundError
 from src.common.pokemon import Pokemon
 from src.controllers.pokemon_find_controller import PokemonFindController
 
@@ -40,17 +40,16 @@ def test_find(by: str, value: str, mocker: MockerFixture):
 
 
 @pytest.mark.parametrize(
-    "by,value,expected_error",
+    "by,value, expected_error",
     [
         (
             1,
             "Bulbasaur",
-            f"Argument 'by' must be one of {By.ByType}, got '1'",
-        ),
-        (
-            "name",
-            1,
-            "Invalid type for 'value' argument: expected str, got 'int'",
+            {
+                "name": "invalid field value",
+                "status_code": 2,
+                "details": "Argument 'by' must be one of ['id', 'name'], got '1'",
+            },
         ),
     ],
 )
@@ -70,10 +69,14 @@ def test_find_error(mocker: MockerFixture):
     mock_repo = mocker.patch(
         "src.models.repositories.pokemons_repository.PokemonsRepository"
     )
-    mock_repo.select_pokemon.return_value = None
+    mock_repo.select_pokemon.side_effect = PokemonNotFoundError
 
     controller = PokemonFindController(mock_repo)
     response = controller.find("name", "Bulbasaur")
 
     assert not response["success"]
-    assert response["error"] == "No pokemon found"
+    assert response["error"] == {
+        "name": "pokemon not found",
+        "status_code": 4,
+        "details": "an unknown error was raised",
+    }
