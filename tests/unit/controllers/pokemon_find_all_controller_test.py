@@ -1,5 +1,6 @@
 from pytest_mock import MockerFixture
 
+from src.common.exceptions import PokemonNotFoundError
 from src.common.pokemon import Pokemon
 from src.controllers.pokemon_find_all_controller import PokemonFindAllController
 
@@ -41,13 +42,20 @@ def test_find_all(mocker: MockerFixture):
 
 
 def test_find_all_error(mocker: MockerFixture):
+    expected_error = {
+        "name": "pokemon not found",
+        "status_code": 4,
+        "details": "No pokemon found in repository",
+    }
     mock_repo = mocker.patch(
         "src.models.repositories.pokemons_repository.PokemonsRepository"
     )
-    mock_repo.select_all_pokemons.return_value = None
+    mock_repo.select_all_pokemons.side_effect = PokemonNotFoundError(
+        "No pokemon found in repository"
+    )
 
     controller = PokemonFindAllController(mock_repo)
     response = controller.find_all()
 
     assert not response["success"]
-    assert response["error"] == "No pokemon found"
+    assert response["error"] == expected_error
