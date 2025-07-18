@@ -30,16 +30,6 @@ class PokemonRegisterController:
 
         pokemon_register_validator(new_pokemon_info)
 
-        fields_to_check = {"pokemon_id": int, "generation": int, "is_legendary": int}
-        for field, type_converter in fields_to_check.items():
-            if field in new_pokemon_info:
-                try:
-                    new_pokemon_info[field] = type_converter(new_pokemon_info[field])
-                except Exception as e:
-                    raise InvalidFieldValueError(
-                        f"The field '{field}' must be a valid number."
-                    ) from e
-
     def __insert_pokemon(self, new_pokemon_info: Dict) -> None:
         pokemon = Pokemon(
             pokemon_id=int(new_pokemon_info["pokemon_id"]),
