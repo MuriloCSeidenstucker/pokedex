@@ -14,17 +14,22 @@ from src.views.pokemon_find_view import PokemonFindView
 )
 def test_pokemon_find_view(by_input: str, value_input: str, mocker: MockerFixture):
     mock_os_system = mocker.patch("os.system")
+    mock_add_column = mocker.MagicMock()
+    mocker.patch("rich.table.Table.add_column", side_effect=mock_add_column)
+    mock_add_row = mocker.MagicMock()
+    mocker.patch("rich.table.Table.add_row", side_effect=mock_add_row)
     mock_print = mocker.patch("rich.console.Console.print")
-    mock_input = mocker.patch(
-        "rich.console.Console.input", side_effect=[by_input, value_input]
-    )
+    mock_inputs = [by_input, value_input]
+    mock_prompt_ask = mocker.patch("rich.prompt.Prompt.ask", side_effect=mock_inputs)
 
     view = PokemonFindView()
     request = view.pokemon_find_view()
 
     mock_os_system.assert_called_once_with("cls||clear")
     mock_print.assert_called_once()
-    assert mock_input.call_count == 2
+    assert mock_prompt_ask.call_count == 2
+    assert mock_add_column.call_count == 2
+    assert mock_add_row.call_count == 2
     assert request["value"] == value_input
 
 

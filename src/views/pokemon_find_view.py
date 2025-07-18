@@ -3,6 +3,7 @@ from typing import Dict
 
 from rich.console import Console
 from rich.panel import Panel
+from rich.prompt import Prompt
 from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
@@ -16,21 +17,32 @@ class PokemonFindView:
     def pokemon_find_view(self) -> Dict:
         os.system("cls||clear")
 
-        console.print("[bold]Buscar pokemon na Pokedex[/bold]\n\n")
+        title = Text("🔎 Buscar Pokémon na Pokédex", style="bold blue")
 
-        by_input: str = console.input("Escolha entre 1(ID) 0(Nome): ")
+        options_table = Table.grid(padding=(0, 2))
+        options_table.add_column(justify="right", style="cyan", no_wrap=True)
+        options_table.add_column(style="white")
+
+        options_table.add_row("[bold]1[/bold]", "Buscar por ID")
+        options_table.add_row("[bold]0[/bold]", "Buscar por Nome")
+
+        console.print(Panel.fit(options_table, title=title, border_style="blue"))
+
+        by_input = Prompt.ask(
+            "[bold yellow]Selecione uma opção[/bold yellow]",
+            choices=["1", "0"],
+        )
+
         by = None
         if by_input == "1":
             by = By.ID
         elif by_input == "0":
             by = By.NAME
 
-        message = (
-            "Determine o ID do pokemon: "
-            if by_input == "1"
-            else "Determine o nome do pokemon: "
-        )
-        value: str = console.input(message)
+        field_label = "ID do Pokémon" if by == By.ID else "Nome do Pokémon"
+        value: str = Prompt.ask(
+            f"[bold green]Informe o {field_label}[/bold green]"
+        ).strip()
 
         return {"by": by, "value": value}
 
