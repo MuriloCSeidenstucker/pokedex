@@ -42,13 +42,21 @@ def test_find_all_pokemons_success(mocker: MockerFixture):
 
 
 def test_find_all_pokemons_fail(mocker: MockerFixture):
-    mock_system = mocker.MagicMock()
-    mocker.patch("os.system", side_effect=mock_system)
-    mock_print = mocker.MagicMock()
-    mocker.patch("rich.console.Console.print", side_effect=mock_print)
+    mock_error = {
+        "name": "spy error",
+        "status_code": -1,
+        "details": "foo",
+    }
+    mock_os_system = mocker.patch("os.system")
+    mock_add_row = mocker.MagicMock()
+    mocker.patch("rich.table.Table.add_row", side_effect=mock_add_row)
+    mock_print = mocker.patch("rich.console.Console.print")
+    mock_panel_fit = mocker.patch("rich.panel.Panel.fit")
 
     view = PokemonFindAllView()
-    view.find_all_pokemons_fail("")
+    view.find_all_pokemons_fail(mock_error)
 
-    mock_system.assert_called_once()
-    mock_print.assert_called()
+    mock_os_system.assert_called_once_with("cls||clear")
+    mock_panel_fit.assert_called_once()
+    assert mock_add_row.call_count == 2
+    assert mock_print.call_count == 3
