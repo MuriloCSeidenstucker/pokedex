@@ -64,6 +64,8 @@ class PokemonsRepository:
         with DBConnectionHandler() as db:
             try:
                 pokemons = db.session.query(PokemonsEntity).all()
+                if not pokemons:
+                    raise PokemonNotFoundError("No pokemon found in repository")
                 return pokemons
             except Exception as e:
                 db.session.rollback()
