@@ -44,7 +44,9 @@ class PokemonsRepository:
                 )
 
                 if not pokemon:
-                    raise PokemonNotFoundError("pokemon not found in repository")
+                    raise PokemonNotFoundError(
+                        f"'{value}' pokemon not found in repository"
+                    )
 
                 return Pokemon(
                     pokemon_id=pokemon.pokemon_id,

@@ -152,7 +152,7 @@ def test_select_pokemon_error(mocker: MockerFixture):
         repo.select_pokemon("name", "Bulbasaur")
         assert False, "Expected exception not raised"
     except PokemonNotFoundError as e:
-        assert str(e) == "pokemon not found in repository"
+        assert str(e) == "'Bulbasaur' pokemon not found in repository"
 
 
 def test_select_all_pokemons(mocker: MockerFixture):

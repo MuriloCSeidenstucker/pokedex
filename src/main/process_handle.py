@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 from typing import Optional
 
@@ -51,5 +52,6 @@ def __execute_command(command: Optional[str]) -> bool:
         result = command_map[command]()
         return result if isinstance(result, bool) else True
 
+    os.system("cls||clear")
     console.print(f"O comando: {command} não foi encontrado!")
     return True

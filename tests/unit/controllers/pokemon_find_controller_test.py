@@ -43,7 +43,7 @@ def test_find(by: str, value: str, mocker: MockerFixture):
     "by,value, expected_error",
     [
         (
-            1,
+            "1",
             "Bulbasaur",
             {
                 "name": "invalid field value",
