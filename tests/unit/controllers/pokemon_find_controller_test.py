@@ -51,6 +51,15 @@ def test_find(by: str, value: str, mocker: MockerFixture):
                 "details": "Argument 'by' must be one of ['id', 'name'], got '1'",
             },
         ),
+        (
+            "",
+            "Bulbasaur",
+            {
+                "name": "missing required field",
+                "status_code": 3,
+                "details": '{"by": ["empty values not allowed"]}',
+            },
+        ),
     ],
 )
 def test_find_validate_fields_error(by, value, expected_error, mocker: MockerFixture):
