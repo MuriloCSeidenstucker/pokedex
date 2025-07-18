@@ -87,5 +87,5 @@ def test_find_error(mocker: MockerFixture):
     assert response["error"] == {
         "name": "pokemon not found",
         "status_code": 4,
-        "details": "an unknown error was raised",
+        "details": "pokemon not found in repository",
     }

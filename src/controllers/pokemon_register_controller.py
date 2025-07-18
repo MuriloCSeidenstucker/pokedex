@@ -1,12 +1,16 @@
 from typing import Dict
 
+from src.common.error_handler import ErrorHandler
+from src.common.exceptions import InvalidFieldValueError
 from src.common.pokemon import Pokemon
 from src.models.repositories.pokemons_repository import PokemonsRepository
+from src.validators.pokemon_register_validator import pokemon_register_validator
 
 
 class PokemonRegisterController:
     def __init__(self, pokemon_repository: PokemonsRepository) -> None:
         self.__pokemon_repository = pokemon_repository
+        self.error_handler = ErrorHandler()
 
     def register(self, new_pokemon_info: Dict) -> Dict:
         try:
@@ -15,20 +19,26 @@ class PokemonRegisterController:
             response = self.__format_response(new_pokemon_info)
             return {"success": True, "message": response}
         except Exception as e:
-            return {"success": False, "error": str(e)}
+            error = self.error_handler.handle_error(e)
+            return {"success": False, "error": error}
 
     def __validate_fields(self, new_pokemon_info: Dict) -> None:
         if not isinstance(new_pokemon_info, Dict):
-            raise Exception(
+            raise InvalidFieldValueError(
                 f"Invalid argument type: {type(new_pokemon_info)}. Must be a dictionary"
             )
 
-        try:
-            int(new_pokemon_info["pokemon_id"])
-            int(new_pokemon_info["generation"])
-            int(new_pokemon_info["is_legendary"])
-        except Exception as e:
-            raise e
+        pokemon_register_validator(new_pokemon_info)
+
+        fields_to_check = {"pokemon_id": int, "generation": int, "is_legendary": int}
+        for field, type_converter in fields_to_check.items():
+            if field in new_pokemon_info:
+                try:
+                    new_pokemon_info[field] = type_converter(new_pokemon_info[field])
+                except Exception as e:
+                    raise InvalidFieldValueError(
+                        f"The field '{field}' must be a valid number."
+                    ) from e
 
     def __insert_pokemon(self, new_pokemon_info: Dict) -> None:
         pokemon = Pokemon(

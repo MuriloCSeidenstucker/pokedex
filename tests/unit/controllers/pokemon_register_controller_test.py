@@ -44,10 +44,11 @@ def test_register_invalid_arg_type(mocker: MockerFixture) -> None:
     response = pokemon_register_controller.register(mock_info)
 
     assert not response["success"]
-    assert (
-        response["error"]
-        == f"Invalid argument type: {type(mock_info)}. Must be a dictionary"
-    )
+    assert response["error"] == {
+        "name": "invalid field value",
+        "status_code": 2,
+        "details": "Invalid argument type: <class 'str'>. Must be a dictionary",
+    }
 
 
 def test_register_parse_error(mocker: MockerFixture) -> None:
@@ -67,4 +68,5 @@ def test_register_parse_error(mocker: MockerFixture) -> None:
     response = pokemon_register_controller.register(mock_info)
 
     assert not response["success"]
-    assert response["error"] == "invalid literal for int() with base 10: 'Primeira'"
+    assert response["error"]["name"] == "invalid field value"
+    assert response["error"]["status_code"] == 2
