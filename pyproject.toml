@@ -43,6 +43,9 @@ mkdocstrings-python = "^1.13.0"
 [tool.pytest.ini_options]
 pythonpath = "."
 addopts = "--doctest-modules"
+filterwarnings = [
+    "ignore::UserWarning",
+]
 
 [tool.isort]
 profile = "black"

@@ -43,21 +43,21 @@ def test_find(by: str, value: str, mocker: MockerFixture):
     "by,value, expected_error",
     [
         (
-            "1",
+            "id",
             "Bulbasaur",
             {
                 "name": "invalid field value",
                 "status_code": 2,
-                "details": "Argument 'by' must be one of ['id', 'name'], got '1'",
+                "details": "{\"value\": [\"Value must be an integer when 'by' is 'id'\"]}",
             },
         ),
         (
-            "",
-            "Bulbasaur",
+            "name",
+            "123",
             {
-                "name": "missing required field",
-                "status_code": 3,
-                "details": '{"by": ["empty values not allowed"]}',
+                "name": "invalid field value",
+                "status_code": 2,
+                "details": "{\"value\": [\"Value must be a string when 'by' is 'name'\"]}",
             },
         ),
     ],

@@ -1,11 +1,9 @@
 from typing import Dict
 
-from src.common.by import By
 from src.common.error_handler import ErrorHandler
-from src.common.exceptions import InvalidFieldValueError
 from src.common.pokemon import Pokemon
 from src.models.repositories.pokemons_repository import PokemonsRepository
-from src.validators.pokemon_find_validator import pokemon_find_validator
+from src.validators.pokemon_find_validator import pokemon_query_validator
 
 
 class PokemonFindController:
@@ -25,12 +23,7 @@ class PokemonFindController:
 
     @classmethod
     def __validate_fields(cls, by: str, value: str) -> None:
-        pokemon_find_validator({"by": by, "value": value})
-
-        if by not in By.ByType:
-            raise InvalidFieldValueError(
-                f"Argument 'by' must be one of {By.ByType}, got '{by}'"
-            )
+        pokemon_query_validator({"by": by, "value": value})
 
     def __fetch(self, by: str, value: str) -> Pokemon:
         pokemon = self.__pokemons_repository.select_pokemon(by, value)
