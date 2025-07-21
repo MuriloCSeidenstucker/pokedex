@@ -49,8 +49,8 @@ class PokemonFindView:
     def pokemon_find_success(self, message: Dict) -> None:
         os.system("cls||clear")
 
-        attr = message["attributes"]
-        is_legendary = "Sim" if attr.is_legendary == "1" else "Não"
+        attrs = message["attributes"]
+        is_legendary = "Sim" if attrs.is_legendary == 1 else "Não"
 
         title = Text("✅ Pokémon Encontrado com Sucesso!", style="bold green")
 
@@ -60,11 +60,11 @@ class PokemonFindView:
             box=None,
             padding=(0, 1),
         )
-        table.add_row("🔢 Número:", str(attr.pokemon_id))
-        table.add_row("📛 Nome:", attr.pkn_name)
-        table.add_row("🧬 Tipo Primário:", attr.type_1)
-        table.add_row("🧬 Tipo Secundário:", attr.type_2 if attr.type_2 else "—")
-        table.add_row("🕰️ Geração:", str(attr.generation))
+        table.add_row("🔢 Número:", str(attrs.pokemon_id))
+        table.add_row("📛 Nome:", attrs.pkn_name)
+        table.add_row("🧬 Tipo Primário:", attrs.type_1)
+        table.add_row("🧬 Tipo Secundário:", attrs.type_2 if attrs.type_2 else "—")
+        table.add_row("🕰️ Geração:", str(attrs.generation))
         table.add_row("🌟 Lendário:", is_legendary)
 
         meta_table = Table(show_header=False, box=None, padding=(0, 1))

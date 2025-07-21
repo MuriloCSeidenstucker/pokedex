@@ -1,7 +1,8 @@
+# pylint: disable=C0301:line-too-long
+
 import pytest
 from pytest_mock import MockerFixture
 
-from src.common.by import By
 from src.common.pokemon import Pokemon
 from src.controllers.pokemon_update_controller import PokemonUpdateController
 
@@ -43,28 +44,28 @@ def test_update(mocker: MockerFixture):
     "by,value,pokemon_data,expected_error",
     [
         (
-            1,
+            "id",
             "Bulbasaur",
             {},
-            f"Argument 'by' must be one of {By.ByType}, got '1'",
+            "{\"value\": [\"Value must be an integer when 'by' is 'id'\"]}",
         ),
         (
             "name",
-            1,
+            "1",
             {},
-            "Invalid type for 'value' argument: expected str, got 'int'",
+            "{\"value\": [\"Value must be a string when 'by' is 'name'\"]}",
         ),
         (
             "id",
             "1",
-            None,
-            "Invalid argument type: NoneType. Must be a dictionary",
+            {},
+            '{"generation": ["required field"], "is_legendary": ["required field"], "pkn_name": ["required field"], "pokemon_id": ["required field"], "type_1": ["required field"]}',
         ),
         (
             "id",
             "1",
             {"pokemon_id": "abc"},
-            "invalid literal for int() with base 10: 'abc'",
+            '{"generation": ["required field"], "is_legendary": ["required field"], "pkn_name": ["required field"], "pokemon_id": ["field \'pokemon_id\' cannot be coerced: invalid literal for int() with base 10: \'abc\'", "must be of integer type"], "type_1": ["required field"]}',
         ),
     ],
 )
@@ -78,18 +79,5 @@ def test_update_validate_fields_error(
     controller = PokemonUpdateController(mock_repo)
     response = controller.update(by, value, pokemon_data)
 
-    assert expected_error == response["error"]
+    assert expected_error == response["error"]["details"]
     assert not response["success"]
-
-
-def test_update_error(mocker: MockerFixture):
-    mock_repo = mocker.patch(
-        "src.models.repositories.pokemons_repository.PokemonsRepository"
-    )
-    mock_repo.update_pokemon.return_value = None
-
-    controller = PokemonUpdateController(mock_repo)
-    response = controller.update("name", "Bulbasaur", {})
-
-    assert not response["success"]
-    assert response["error"] == "'pokemon_id'"

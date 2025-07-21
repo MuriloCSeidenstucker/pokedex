@@ -53,11 +53,17 @@ def test_delete_pokemon_success(mocker: MockerFixture):
 
 
 def test_delete_pokemon_fail(mocker: MockerFixture):
+    mock_error = {"name": "spy test", "status_code": -1, "details": "foo"}
     mock_os_system = mocker.patch("os.system")
+    mock_add_row = mocker.MagicMock()
+    mocker.patch("rich.table.Table.add_row", side_effect=mock_add_row)
     mock_print = mocker.patch("rich.console.Console.print")
+    mock_panel_fit = mocker.patch("rich.panel.Panel.fit")
 
     view = PokemonDeleteView()
-    view.delete_pokemon_fail("Test")
+    view.delete_pokemon_fail(mock_error)
 
     mock_os_system.assert_called_once_with("cls||clear")
-    mock_print.assert_called_once()
+    mock_panel_fit.assert_called_once()
+    assert mock_add_row.call_count == 2
+    assert mock_print.call_count == 3

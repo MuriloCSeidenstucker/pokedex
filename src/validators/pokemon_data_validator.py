@@ -6,7 +6,7 @@ from cerberus import Validator
 from src.common.exceptions import InvalidFieldValueError
 
 
-def pokemon_register_validator(request: Any) -> None:
+def pokemon_data_validator(request: Any) -> None:
     validator = Validator(
         {
             "pokemon_id": {

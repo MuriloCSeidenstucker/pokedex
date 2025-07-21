@@ -4,7 +4,7 @@ from src.common.error_handler import ErrorHandler
 from src.common.exceptions import InvalidFieldValueError
 from src.common.pokemon import Pokemon
 from src.models.repositories.pokemons_repository import PokemonsRepository
-from src.validators.pokemon_register_validator import pokemon_register_validator
+from src.validators.pokemon_data_validator import pokemon_data_validator
 
 
 class PokemonRegisterController:
@@ -28,7 +28,7 @@ class PokemonRegisterController:
                 f"Invalid argument type: {type(new_pokemon_info)}. Must be a dictionary"
             )
 
-        pokemon_register_validator(new_pokemon_info)
+        pokemon_data_validator(new_pokemon_info)
 
     def __insert_pokemon(self, new_pokemon_info: Dict) -> None:
         pokemon = Pokemon(

@@ -1,13 +1,15 @@
 from typing import Dict
 
-from src.common.by import By
+from src.common.error_handler import ErrorHandler
 from src.common.pokemon import Pokemon
 from src.models.repositories.pokemons_repository import PokemonsRepository
+from src.validators import pokemon_query_validator
 
 
 class PokemonDeleteController:
     def __init__(self, pokemons_repository: PokemonsRepository):
         self.__pokemons_repository = pokemons_repository
+        self.error_handler = ErrorHandler()
 
     def delete(self, by: str, value: str) -> Dict:
         try:
@@ -16,17 +18,12 @@ class PokemonDeleteController:
             response = self.__format_response(deleted_pokemon)
             return {"success": True, "message": response}
         except Exception as e:
-            return {"success": False, "error": str(e)}
+            error = self.error_handler.handle_error(e)
+            return {"success": False, "error": error}
 
     @classmethod
     def __validate_fields(cls, by: str, value: str) -> None:
-        if by not in By.ByType:
-            raise Exception(f"Argument 'by' must be one of {By.ByType}, got '{by}'")
-
-        if not isinstance(value, str):
-            raise Exception(
-                f"Invalid type for 'value' argument: expected str, got '{type(value).__name__}'"
-            )
+        pokemon_query_validator({"by": by, "value": value})
 
     def __delete_pokemon(self, by: str, value: str) -> Pokemon:
         pokemon = self.__pokemons_repository.delete_pokemon(by, value)

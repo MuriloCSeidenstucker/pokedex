@@ -1,7 +1,6 @@
 import pytest
 from pytest_mock import MockerFixture
 
-from src.common.by import By
 from src.common.pokemon import Pokemon
 from src.controllers.pokemon_delete_controller import PokemonDeleteController
 
@@ -43,14 +42,14 @@ def test_delete(by: str, value: str, mocker: MockerFixture):
     "by,value,expected_error",
     [
         (
-            1,
+            "id",
             "Bulbasaur",
-            f"Argument 'by' must be one of {By.ByType}, got '1'",
+            "{\"value\": [\"Value must be an integer when 'by' is 'id'\"]}",
         ),
         (
             "name",
-            1,
-            "Invalid type for 'value' argument: expected str, got 'int'",
+            "1",
+            "{\"value\": [\"Value must be a string when 'by' is 'name'\"]}",
         ),
     ],
 )
@@ -62,5 +61,5 @@ def test_delete_validate_fields_error(by, value, expected_error, mocker: MockerF
     controller = PokemonDeleteController(mock_repo)
     response = controller.delete(by, value)
 
-    assert expected_error == response["error"]
+    assert expected_error == response["error"]["details"]
     assert not response["success"]

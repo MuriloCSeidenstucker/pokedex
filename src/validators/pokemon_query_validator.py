@@ -13,6 +13,12 @@ class QueryValidator(Validator):
         if not constraint:
             return
 
+        if not isinstance(value, str):
+            self._error(
+                field, f"The input value must be a string, got {type(value).__name__}"
+            )
+            return
+
         by = self.document.get("by")
 
         if by == "id" and not value.isdigit():

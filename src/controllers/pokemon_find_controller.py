@@ -3,7 +3,7 @@ from typing import Dict
 from src.common.error_handler import ErrorHandler
 from src.common.pokemon import Pokemon
 from src.models.repositories.pokemons_repository import PokemonsRepository
-from src.validators.pokemon_find_validator import pokemon_query_validator
+from src.validators.pokemon_query_validator import pokemon_query_validator
 
 
 class PokemonFindController:

@@ -1,7 +1,5 @@
 from typing import List
 
-from sqlalchemy.exc import NoResultFound
-
 from src.common.exceptions import PokemonNotFoundError
 from src.common.pokemon import Pokemon
 from src.models.entities.pokemons_entity import PokemonsEntity
@@ -85,7 +83,7 @@ class PokemonsRepository:
                 )
 
                 if pokemon_check is None:
-                    raise NoResultFound(f"No Pokemon found with {by} = {value}")
+                    raise PokemonNotFoundError(f"No Pokemon found with {by} = {value}")
 
                 updated_data = {
                     "pokemon_id": pokemon.pokemon_id,
@@ -119,7 +117,7 @@ class PokemonsRepository:
                 )
 
                 if pokemon is None:
-                    raise NoResultFound(f"No Pokemon found with {by} = {value}")
+                    raise PokemonNotFoundError(f"No Pokemon found with {by} = {value}")
 
                 pkn_data = Pokemon(
                     pokemon_id=pokemon.pokemon_id,

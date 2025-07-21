@@ -41,6 +41,11 @@ def test_pokemon_update_view(mocker: MockerFixture):
 def test_pokemon_update_success(mocker: MockerFixture):
     mock_os_system = mocker.patch("os.system")
     mock_print = mocker.patch("rich.console.Console.print")
+    mock_add_column = mocker.MagicMock()
+    mocker.patch("rich.table.Table.add_column", side_effect=mock_add_column)
+    mock_add_row = mocker.MagicMock()
+    mocker.patch("rich.table.Table.add_row", side_effect=mock_add_row)
+    mock_panel_fit = mocker.patch("rich.panel.Panel.fit")
 
     mock_message = {
         "type": "Spy",
@@ -59,15 +64,24 @@ def test_pokemon_update_success(mocker: MockerFixture):
     view.pokemon_update_success(mock_message)
 
     mock_os_system.assert_called_once_with("cls||clear")
-    assert mock_print.call_count == 2
+    mock_print.assert_called_once()
+    mock_panel_fit.assert_called_once()
+    assert mock_add_column.call_count == 2
+    assert mock_add_row.call_count == 8
 
 
 def test_pokemon_update_fail(mocker: MockerFixture):
+    mock_error = {"name": "spy test", "status_code": -1, "details": "foo"}
     mock_os_system = mocker.patch("os.system")
+    mock_add_row = mocker.MagicMock()
+    mocker.patch("rich.table.Table.add_row", side_effect=mock_add_row)
     mock_print = mocker.patch("rich.console.Console.print")
+    mock_panel_fit = mocker.patch("rich.panel.Panel.fit")
 
     view = PokemonUpdateView()
-    view.pokemon_update_fail("Test")
+    view.pokemon_update_fail(mock_error)
 
     mock_os_system.assert_called_once_with("cls||clear")
-    mock_print.assert_called_once()
+    mock_panel_fit.assert_called_once()
+    assert mock_add_row.call_count == 2
+    assert mock_print.call_count == 3

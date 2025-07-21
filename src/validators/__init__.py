@@ -1,0 +1,2 @@
+from src.validators.pokemon_data_validator import pokemon_data_validator
+from src.validators.pokemon_query_validator import pokemon_query_validator

@@ -1,13 +1,15 @@
 from typing import Dict
 
-from src.common.by import By
+from src.common.error_handler import ErrorHandler
 from src.common.pokemon import Pokemon
 from src.models.repositories.pokemons_repository import PokemonsRepository
+from src.validators import pokemon_data_validator, pokemon_query_validator
 
 
 class PokemonUpdateController:
     def __init__(self, pokemons_repository: PokemonsRepository) -> None:
         self.__pokemons_repository = pokemons_repository
+        self.error_handler = ErrorHandler()
 
     def update(self, by: str, value: str, pokemon_data: Dict) -> Dict:
         try:
@@ -16,29 +18,13 @@ class PokemonUpdateController:
             response = self.__format_response(pokemon)
             return {"success": True, "message": response}
         except Exception as e:
-            return {"success": False, "error": str(e)}
+            error = self.error_handler.handle_error(e)
+            return {"success": False, "error": error}
 
     @classmethod
     def __validate_fields(cls, by: str, value: str, pokemon_data: Dict) -> None:
-        if by not in By.ByType:
-            raise Exception(f"Argument 'by' must be one of {By.ByType}, got '{by}'")
-
-        if not isinstance(value, str):
-            raise Exception(
-                f"Invalid type for 'value' argument: expected str, got '{type(value).__name__}'"
-            )
-
-        if not isinstance(pokemon_data, Dict):
-            raise Exception(
-                f"Invalid argument type: {type(pokemon_data).__name__}. Must be a dictionary"
-            )
-
-        try:
-            int(pokemon_data["pokemon_id"])
-            int(pokemon_data["generation"])
-            int(pokemon_data["is_legendary"])
-        except Exception as e:
-            raise e
+        pokemon_query_validator({"by": by, "value": value})
+        pokemon_data_validator(pokemon_data)
 
     def __update_pokemon(self, by: str, value: str, pokemon_data: Dict) -> Pokemon:
         pokemon = Pokemon(

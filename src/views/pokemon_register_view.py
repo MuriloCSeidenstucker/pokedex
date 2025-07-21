@@ -15,13 +15,13 @@ class PokemonRegisterView:
     def registry_pokemon_view(self) -> Dict:
         os.system("cls||clear")
 
-        title = Text("📥 Cadastro de Novo Pokémon", style="bold green")
+        title = Text("🐣 Cadastro de Novo Pokémon", style="bold green")
         console.print(Panel.fit(title, border_style="green"))
 
         pokemon_id = Prompt.ask("🔢 Informe o ID do Pokémon")
         pkn_name = Prompt.ask("📛 Nome do Pokémon")
         type_1 = Prompt.ask("🧬 Tipo Primário")
-        type_2 = Prompt.ask("🧬 Tipo Secundário (opcional)", default="")
+        type_2 = Prompt.ask("🧬 Tipo Secundário (opcional)")
         generation = Prompt.ask("🕰️ Geração")
 
         is_legendary = Prompt.ask(
