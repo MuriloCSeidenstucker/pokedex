@@ -17,7 +17,7 @@ class PokemonUpdateView:
     def pokemon_update_view(self) -> Dict:
         os.system("cls||clear")
 
-        title = Text("✏️ Atualizar dados do Pokémon", style="bold yellow")
+        title = Text("🛠️ Atualizar dados do Pokémon", style="bold yellow")
 
         options = Table.grid(padding=(0, 2))
         options.add_column(justify="right", style="cyan")
@@ -25,7 +25,7 @@ class PokemonUpdateView:
         options.add_row("[bold]1[/bold]", "Atualizar por ID")
         options.add_row("[bold]0[/bold]", "Atualizar por Nome")
 
-        console.print(Panel.fit(options, title=title, border_style="red"))
+        console.print(Panel.fit(options, title=title, border_style="yellow"))
 
         by_input = Prompt.ask(
             "[bold yellow]Selecione uma opção[/bold yellow]",

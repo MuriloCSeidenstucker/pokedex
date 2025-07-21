@@ -53,5 +53,5 @@ def __execute_command(command: Optional[str]) -> bool:
         return result if isinstance(result, bool) else True
 
     os.system("cls||clear")
-    console.print(f"O comando: {command} não foi encontrado!")
+    console.print(f"O comando: {command} não foi encontrado!\n")
     return True

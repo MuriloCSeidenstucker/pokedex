@@ -1,33 +1,22 @@
-# pylint: disable=W0613:unused-argument
-
-from typing import Any
-from unittest.mock import MagicMock
-
 from pytest_mock import MockerFixture
 
 from src.views.introduction_view import introduction_page
 
 
-def fake_print(*objects: Any):
-    pass
-
-
-def fake_input(prompt: str) -> str:
-    return "5"
-
-
 def test_introduction_page(mocker: MockerFixture):
-    spy_print = mocker.patch("rich.console.Console.print", side_effect=fake_print)
-    spy_input: MagicMock = mocker.patch(
-        "rich.console.Console.input", side_effect=fake_input
-    )
-    m = mocker.patch("builtins.open", mocker.mock_open())
+    mock_add_column = mocker.MagicMock()
+    mocker.patch("rich.table.Table.add_column", side_effect=mock_add_column)
+    mock_add_row = mocker.MagicMock()
+    mocker.patch("rich.table.Table.add_row", side_effect=mock_add_row)
+    mock_panel_fit = mocker.patch("rich.panel.Panel.fit")
+    mock_print = mocker.patch("rich.console.Console.print")
+    mock_input = mocker.patch("rich.console.Console.input", return_value="foo")
 
-    introduction_page()
+    response = introduction_page()
 
-    return_values = [fake_input(call.args[0]) for call in spy_input.mock_calls]
-
-    assert spy_print.called
-    assert spy_input.called
-    assert return_values[0] == "5"
-    m.assert_called_once_with(r"src\resources\introduction.md", encoding="utf-8")
+    mock_panel_fit.assert_called_once()
+    mock_print.assert_called_once()
+    mock_input.assert_called_once()
+    assert mock_add_column.call_count == 2
+    assert mock_add_row.call_count == 6
+    assert response == "foo"
