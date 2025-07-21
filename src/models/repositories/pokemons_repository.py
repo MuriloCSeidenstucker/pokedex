@@ -1,6 +1,8 @@
 from typing import List
 
-from src.common.exceptions import PokemonNotFoundError
+from sqlalchemy.exc import IntegrityError
+
+from src.common.exceptions import DuplicatePokemonError, PokemonNotFoundError
 from src.common.pokemon import Pokemon
 from src.models.entities.pokemons_entity import PokemonsEntity
 from src.models.settings.connection import DBConnectionHandler
@@ -25,6 +27,16 @@ class PokemonsRepository:
                 )
                 db.session.add(new_registry)
                 db.session.commit()
+            except IntegrityError as e:
+                db.session.rollback()
+                msg = ""
+                if "pokemons.PRIMARY" in str(e.orig.args[1]):
+                    pokemon_id = e.params.get("pokemon_id")
+                    msg = f"pokemon with id '{pokemon_id}' already exists in repository"
+                if "pokemons.pkn_name" in str(e.orig.args[1]):
+                    name = e.params.get("pkn_name")
+                    msg = f"pokemon with name '{name}' already exists in repository"
+                raise DuplicatePokemonError(msg) from e
             except Exception as e:
                 db.session.rollback()
                 raise e

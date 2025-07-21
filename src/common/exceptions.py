@@ -29,3 +29,10 @@ class PokemonNotFoundError(PokedexBaseError):
         super().__init__(msg)
         self.name = "pokemon not found"
         self.status_code = 4
+
+
+class DuplicatePokemonError(PokedexBaseError):
+    def __init__(self, msg: str = "pokemon already exists in repository") -> None:
+        super().__init__(msg)
+        self.name = "duplicate pokemon"
+        self.status_code = 5
