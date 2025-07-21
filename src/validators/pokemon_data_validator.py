@@ -4,6 +4,7 @@ from typing import Any
 from cerberus import Validator
 
 from src.common.exceptions import InvalidFieldValueError
+from src.common.pokemon_type import POKEMON_TYPES
 
 
 def pokemon_data_validator(request: Any) -> None:
@@ -15,9 +16,19 @@ def pokemon_data_validator(request: Any) -> None:
                 "required": True,
                 "empty": False,
             },
-            "pkn_name": {"type": "string", "required": True, "empty": False},
-            "type_1": {"type": "string", "required": True, "empty": False},
-            "type_2": {"type": "string"},
+            "pkn_name": {
+                "type": "string",
+                "required": True,
+                "empty": False,
+                "regex": "^[A-Za-z ]+$",
+            },
+            "type_1": {
+                "type": "string",
+                "required": True,
+                "empty": False,
+                "allowed": POKEMON_TYPES,
+            },
+            "type_2": {"type": "string", "allowed": POKEMON_TYPES + [""]},
             "generation": {
                 "type": "integer",
                 "coerce": int,

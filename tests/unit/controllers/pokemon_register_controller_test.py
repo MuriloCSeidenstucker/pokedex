@@ -11,8 +11,8 @@ def test_register(mocker: MockerFixture) -> None:
     mock_info = {
         "pokemon_id": "1",
         "pkn_name": "Bulbasaur",
-        "type_1": "Grasss",
-        "type_2": "Poison",
+        "type_1": "grass",
+        "type_2": "poison",
         "generation": "1",
         "is_legendary": "0",
     }

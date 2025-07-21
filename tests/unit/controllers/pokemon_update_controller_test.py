@@ -11,16 +11,16 @@ def test_update(mocker: MockerFixture):
     mock_pokemon = Pokemon(
         pokemon_id=1,
         pkn_name="Bulbasaur",
-        type_1="Grass",
-        type_2="Poison",
+        type_1="grass",
+        type_2="poison",
         generation=1,
         is_legendary=0,
     )
     mock_data = {
         "pokemon_id": "1",
         "pkn_name": "Bulbasaur",
-        "type_1": "Grass",
-        "type_2": "Poison",
+        "type_1": "grass",
+        "type_2": "poison",
         "generation": "1",
         "is_legendary": "0",
     }

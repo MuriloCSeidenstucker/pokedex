@@ -8,7 +8,7 @@ from src.views.pokemon_register_view import PokemonRegisterView
 def test_registry_pokemon_view(mocker: MockerFixture):
     mock_os_system = mocker.patch("os.system")
     mock_print = mocker.patch("rich.console.Console.print")
-    mock_inputs = ["1", "Bulbasaur", "Grass", "Poison", "1", "0"]
+    mock_inputs = ["1", "Bulbasaur", "grass", "poison", "1", "0"]
     mock_prompt_ask = mocker.patch("rich.prompt.Prompt.ask", side_effect=mock_inputs)
     mock_panel_fit = mocker.patch("rich.panel.Panel.fit")
 
@@ -16,8 +16,8 @@ def test_registry_pokemon_view(mocker: MockerFixture):
     request = view.registry_pokemon_view()
 
     mock_os_system.assert_called_once_with("cls||clear")
-    mock_print.assert_called_once()
     mock_panel_fit.assert_called_once()
+    assert mock_print.call_count == 3
     assert mock_prompt_ask.call_count == 6
     assert isinstance(request, Dict)
     assert request["pkn_name"] == mock_inputs[1]
@@ -30,8 +30,8 @@ def test_registry_pokemon_success(mocker: MockerFixture):
         "attributes": {
             "pokemon_id": "1",
             "pkn_name": "Bulbasaur",
-            "type_1": "Grass",
-            "type_2": "Poison",
+            "type_1": "grass",
+            "type_2": "poison",
             "generation": "1",
             "is_legendary": "0",
         },
