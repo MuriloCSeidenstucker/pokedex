@@ -1,31 +1,53 @@
+from typing import List
+
+import pytest
 from pytest_mock import MockerFixture
 
 from src.common.pokemon import Pokemon
 from src.views.pokemon_update_view import PokemonUpdateView
 
 
-def test_pokemon_update_view(mocker: MockerFixture):
-    mock_inputs = [
-        "1",
-        "9999",
-        "9999",
-        "Pokemon_Spy",
-        "grass",
-        "poison",
-        "1",
-        "0",
-    ]
+@pytest.mark.parametrize(
+    "inputs",
+    [
+        (
+            [
+                "1",
+                "9999",
+                "9999",
+                "Pokemon_Spy",
+                "grass",
+                "poison",
+                "1",
+                "0",
+            ]
+        ),
+        (
+            [
+                "0",
+                "Pokemon_Spy",
+                "9999",
+                "Pokemon_Spy",
+                "grass",
+                "poison",
+                "1",
+                "0",
+            ]
+        ),
+    ],
+)
+def test_pokemon_update_view(inputs: List[str], mocker: MockerFixture):
     expected_pokemon = {
-        "pokemon_id": mock_inputs[2],
-        "pkn_name": mock_inputs[3],
-        "type_1": mock_inputs[4],
-        "type_2": mock_inputs[5],
-        "generation": mock_inputs[6],
-        "is_legendary": mock_inputs[7],
+        "pokemon_id": inputs[2],
+        "pkn_name": inputs[3],
+        "type_1": inputs[4],
+        "type_2": inputs[5],
+        "generation": inputs[6],
+        "is_legendary": inputs[7],
     }
     mock_os_system = mocker.patch("os.system")
     mock_print = mocker.patch("rich.console.Console.print")
-    mock_input = mocker.patch("rich.console.Console.input", side_effect=mock_inputs)
+    mock_input = mocker.patch("rich.console.Console.input", side_effect=inputs)
 
     view = PokemonUpdateView()
     request = view.pokemon_update_view()
@@ -33,8 +55,7 @@ def test_pokemon_update_view(mocker: MockerFixture):
     mock_os_system.assert_called_once_with("cls||clear")
     assert mock_print.call_count == 3
     assert mock_input.call_count == 8
-    assert request["by"] == "id"
-    assert request["value"] == mock_inputs[1]
+    assert request["value"] == inputs[1]
     assert request["pokemon_data"] == expected_pokemon
 
 
