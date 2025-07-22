@@ -1,11 +1,14 @@
 # pylint: disable=C0301:line-too-long
 
+from dataclasses import asdict
 from typing import List
 
+import pytest
 from pytest_mock import MockerFixture
+from sqlalchemy.exc import IntegrityError
 
 from src.common.by import By
-from src.common.exceptions import PokemonNotFoundError
+from src.common.exceptions import DuplicatePokemonError, PokemonNotFoundError
 from src.common.pokemon import Pokemon
 from src.models.entities.pokemons_entity import PokemonsEntity
 from src.models.repositories.pokemons_repository import PokemonsRepository
@@ -51,7 +54,55 @@ def test_insert_pokemon(mocker: MockerFixture):
     mock_session.rollback.assert_not_called()
 
 
-def test_insert_pokemon_error(mocker: MockerFixture):
+@pytest.mark.parametrize(
+    "args_value, expected_msg",
+    [
+        ("pokemons.PRIMARY", "pokemon with id '4' already exists in repository"),
+        (
+            "pokemons.pkn_name",
+            "pokemon with name 'Charmander' already exists in repository",
+        ),
+    ],
+)
+def test_insert_pokemon_integrity_error(
+    args_value: str, expected_msg: str, mocker: MockerFixture
+):
+    mock_pokemon = Pokemon(
+        pokemon_id=4,
+        pkn_name="Charmander",
+        type_1="fire",
+        type_2="",
+        generation=1,
+        is_legendary=0,
+    )
+    mock_orig = mocker.MagicMock()
+    mock_orig.args = [-1, args_value]
+    error = IntegrityError(statement=None, params=asdict(mock_pokemon), orig=mock_orig)
+    mock_session = mocker.MagicMock()
+    mock_session.add.side_effect = error
+    mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
+    mock_db_handler = mocker.MagicMock()
+    mock_db_handler.__enter__.return_value = mock_db_handler
+    mock_db_handler.session = mock_session
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler",
+        return_value=mock_db_handler,
+    )
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler.sqlalchemy.orm.sessionmaker",
+        return_value=mock_sessionmaker,
+    )
+
+    repo = PokemonsRepository()
+    try:
+        repo.insert_pokemon(mock_pokemon)
+        assert False, "Expected exception not raised"
+    except Exception as e:
+        assert isinstance(e, DuplicatePokemonError)
+        assert str(e) == expected_msg
+
+
+def test_insert_pokemon_unknown_error(mocker: MockerFixture):
     mock_session = mocker.MagicMock()
     mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
     mock_db_handler = mocker.MagicMock()
@@ -203,9 +254,9 @@ def test_select_all_pokemons(mocker: MockerFixture):
     assert response[1].pkn_name == "Ivysaur"
 
 
-def test_select_all_pokemons_error(mocker: MockerFixture):
+def test_select_all_pokemons_not_found_error(mocker: MockerFixture):
     mock_query = mocker.MagicMock()
-    mock_query.all.side_effect = Exception("NotFound")
+    mock_query.all.return_value = None
     mock_session = mocker.MagicMock()
     mock_session.query.return_value = mock_query
     mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
@@ -226,7 +277,38 @@ def test_select_all_pokemons_error(mocker: MockerFixture):
         repo.select_all_pokemons()
         assert False, "Expected exception not raised"
     except Exception as e:
-        assert str(e) == "NotFound"
+        assert isinstance(e, PokemonNotFoundError)
+        assert str(e) == "No pokemon found in repository"
+
+    mock_session.query.assert_called_once_with(PokemonsEntity)
+    mock_query.all.assert_called_once()
+    mock_session.rollback.assert_called_once()
+
+
+def test_select_all_pokemons_unknown_error(mocker: MockerFixture):
+    mock_query = mocker.MagicMock()
+    mock_query.all.side_effect = Exception("unknown")
+    mock_session = mocker.MagicMock()
+    mock_session.query.return_value = mock_query
+    mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
+    mock_db_handler = mocker.MagicMock()
+    mock_db_handler.__enter__.return_value = mock_db_handler
+    mock_db_handler.session = mock_session
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler",
+        return_value=mock_db_handler,
+    )
+    mocker.patch(
+        "src.models.repositories.pokemons_repository.DBConnectionHandler.sqlalchemy.orm.sessionmaker",
+        return_value=mock_sessionmaker,
+    )
+
+    repo = PokemonsRepository()
+    try:
+        repo.select_all_pokemons()
+        assert False, "Expected exception not raised"
+    except Exception as e:
+        assert str(e) == "unknown"
 
     mock_session.query.assert_called_once_with(PokemonsEntity)
     mock_query.all.assert_called_once()
