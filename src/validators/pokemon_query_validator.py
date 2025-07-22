@@ -7,9 +7,15 @@ from src.common.exceptions import InvalidFieldValueError
 
 
 class QueryValidator(Validator):
-    def _validate_value_type_based_on_by(
-        self, constraint: bool, field: str, value: str
-    ):
+    def _validate_value_type_based_on_by(self, constraint, field, value):
+        """Valida o tipo do valor com base na chave auxiliar 'by'.
+
+        Se 'by' for 'id', o valor deve conter apenas dígitos (string numérica).
+        Se 'by' for 'name', o valor não deve ser numérico (string textual).
+
+        The rule's arguments are validated against this schema:
+        {'type': 'boolean'}
+        """
         if not constraint:
             return
 
@@ -29,7 +35,7 @@ class QueryValidator(Validator):
 
 
 def pokemon_query_validator(request: Any):
-    custom_schema = {
+    schema = {
         "by": {
             "type": "string",
             "required": True,
@@ -39,7 +45,7 @@ def pokemon_query_validator(request: Any):
         "value": {"required": True, "empty": False, "value_type_based_on_by": True},
     }
 
-    v = QueryValidator(custom_schema)
+    v = QueryValidator(schema)
 
     response = v.validate(request)
 
