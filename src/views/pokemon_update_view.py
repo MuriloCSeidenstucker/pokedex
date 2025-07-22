@@ -1,6 +1,7 @@
 import os
 from typing import Dict
 
+from rich.columns import Columns
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
@@ -9,6 +10,7 @@ from rich.table import Table
 from rich.text import Text
 
 from src.common.by import By
+from src.common.pokemon_type import POKEMON_TYPES, TYPE_COLORS, TYPE_ICONS
 
 console = Console()
 
@@ -31,7 +33,6 @@ class PokemonUpdateView:
             "[bold yellow]Selecione uma opção[/bold yellow]",
             choices=["1", "0"],
         )
-
         by = None
         if by_input == "1":
             by = By.ID
@@ -45,8 +46,14 @@ class PokemonUpdateView:
 
         pokemon_id = Prompt.ask("🔢 Informe o ID do Pokémon")
         pkn_name = Prompt.ask("📛 Nome do Pokémon")
-        type_1 = Prompt.ask("🧬 Tipo Primário")
-        type_2 = Prompt.ask("🧬 Tipo Secundário (opcional)")
+        console.print("\n[bold magenta]Tipos Disponíveis:[/bold magenta]")
+        console.print(self.__render_types_panel())
+        type_1 = Prompt.ask(
+            "🧬 Tipo Primário", choices=POKEMON_TYPES, show_choices=False
+        )
+        type_2 = Prompt.ask(
+            "🧬 Tipo Secundário (opcional)", default="", show_default=False
+        )
         generation = Prompt.ask("🕰️ Geração")
 
         is_legendary = Prompt.ask(
@@ -107,3 +114,12 @@ class PokemonUpdateView:
         console.print(
             Panel(syntax, title="📋 Detalhes Técnicos", border_style="grey50")
         )
+
+    def __render_types_panel(self):
+        panels = []
+        for type_name in POKEMON_TYPES:
+            color = TYPE_COLORS.get(type_name, "white")
+            icon = TYPE_ICONS.get(type_name, "")
+            text = Text(f"{icon} {type_name}", style=f"bold {color}")
+            panels.append(Panel(text, expand=True, border_style=color))
+        return Columns(panels, equal=True, expand=True)

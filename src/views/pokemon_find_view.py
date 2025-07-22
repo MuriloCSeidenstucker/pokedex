@@ -32,7 +32,6 @@ class PokemonFindView:
             "[bold yellow]Selecione uma opção[/bold yellow]",
             choices=["1", "0"],
         )
-
         by = None
         if by_input == "1":
             by = By.ID

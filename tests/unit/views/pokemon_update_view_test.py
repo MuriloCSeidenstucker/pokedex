@@ -10,8 +10,8 @@ def test_pokemon_update_view(mocker: MockerFixture):
         "9999",
         "9999",
         "Pokemon_Spy",
-        "Grass",
-        "Poison",
+        "grass",
+        "poison",
         "1",
         "0",
     ]
@@ -31,7 +31,7 @@ def test_pokemon_update_view(mocker: MockerFixture):
     request = view.pokemon_update_view()
 
     mock_os_system.assert_called_once_with("cls||clear")
-    mock_print.assert_called_once()
+    assert mock_print.call_count == 3
     assert mock_input.call_count == 8
     assert request["by"] == "id"
     assert request["value"] == mock_inputs[1]
