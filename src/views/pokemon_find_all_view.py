@@ -7,6 +7,8 @@ from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
 
+from src.common.pokemon_type import TYPE_COLORS
+
 console = Console()
 
 
@@ -31,8 +33,18 @@ class PokemonFindAllView:
         table.add_column("Lendário", justify="center")
 
         for pkn in message["attributes"]:
-            type_2 = pkn.type_2 if pkn.type_2 else "-"
-            types_formatted = f"[cyan]{pkn.type_1}[/cyan]\n[blue]{type_2}[/blue]"
+            type_1_color = TYPE_COLORS.get(pkn.type_1.lower(), "white")
+            type_2_color = (
+                TYPE_COLORS.get(pkn.type_2.lower(), "white") if pkn.type_2 else "grey30"
+            )
+
+            type_1_styled = f"[{type_1_color}]{pkn.type_1}[/]"
+            type_2_styled = (
+                f"[{type_2_color}]{pkn.type_2}[/]" if pkn.type_2 else "[grey30]-[/]"
+            )
+
+            types_formatted = f"{type_1_styled}\n{type_2_styled}"
+
             is_legendary = (
                 "[bold green]Sim[/bold green]"
                 if pkn.is_legendary == 1
