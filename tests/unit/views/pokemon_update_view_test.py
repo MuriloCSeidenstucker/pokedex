@@ -14,11 +14,17 @@ from src.views.pokemon_update_view import PokemonUpdateView
             [
                 "1",
                 "9999",
+                "0",
                 "9999",
-                "Pokemon_Spy",
-                "grass",
-                "poison",
                 "1",
+                "Pokemon_Spy",
+                "2",
+                "grass",
+                "3",
+                "poison",
+                "4",
+                "1",
+                "5",
                 "0",
             ]
         ),
@@ -26,11 +32,17 @@ from src.views.pokemon_update_view import PokemonUpdateView
             [
                 "0",
                 "Pokemon_Spy",
+                "0",
                 "9999",
-                "Pokemon_Spy",
-                "grass",
-                "poison",
                 "1",
+                "Pokemon_Spy",
+                "2",
+                "grass",
+                "3",
+                "poison",
+                "4",
+                "1",
+                "5",
                 "0",
             ]
         ),
@@ -38,23 +50,23 @@ from src.views.pokemon_update_view import PokemonUpdateView
 )
 def test_pokemon_update_view(inputs: List[str], mocker: MockerFixture):
     expected_pokemon = {
-        "pokemon_id": inputs[2],
-        "pkn_name": inputs[3],
-        "type_1": inputs[4],
-        "type_2": inputs[5],
-        "generation": inputs[6],
-        "is_legendary": inputs[7],
+        "pokemon_id": inputs[3],
+        "pkn_name": inputs[5],
+        "type_1": inputs[7],
+        "type_2": inputs[9],
+        "generation": inputs[11],
+        "is_legendary": inputs[13],
     }
     mock_os_system = mocker.patch("os.system")
     mock_print = mocker.patch("rich.console.Console.print")
-    mock_input = mocker.patch("rich.console.Console.input", side_effect=inputs)
+    mock_prompt_ask = mocker.patch("rich.prompt.Prompt.ask", side_effect=inputs)
 
     view = PokemonUpdateView()
     request = view.pokemon_update_view()
 
     mock_os_system.assert_called_once_with("cls||clear")
-    assert mock_print.call_count == 3
-    assert mock_input.call_count == 8
+    assert mock_print.call_count == 7
+    assert mock_prompt_ask.call_count == 14
     assert request["value"] == inputs[1]
     assert request["pokemon_data"] == expected_pokemon
 

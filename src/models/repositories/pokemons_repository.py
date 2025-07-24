@@ -81,7 +81,7 @@ class PokemonsRepository:
                 db.session.rollback()
                 raise e
 
-    def update_pokemon(self, by: str, value: str, pokemon: Pokemon) -> None:
+    def update_pokemon(self, by: str, value: str, pokemon: Pokemon) -> Pokemon:
         if by not in column_map:
             raise ValueError(f"Invalid argument: {by}")
 
@@ -97,13 +97,21 @@ class PokemonsRepository:
                 if pokemon_check is None:
                     raise PokemonNotFoundError(f"No Pokemon found with {by} = {value}")
 
+                type_2 = (
+                    pokemon_check.type_2 if pokemon.type_2 is None else pokemon.type_2
+                )
+                is_legendary = (
+                    pokemon.is_legendary
+                    if pokemon.is_legendary in [0, 1]
+                    else pokemon_check.is_legendary
+                )
                 updated_data = {
-                    "pokemon_id": pokemon.pokemon_id,
-                    "pkn_name": pokemon.pkn_name,
-                    "type_1": pokemon.type_1,
-                    "type_2": pokemon.type_2,
-                    "generation": pokemon.generation,
-                    "is_legendary": pokemon.is_legendary,
+                    "pokemon_id": pokemon.pokemon_id or pokemon_check.pokemon_id,
+                    "pkn_name": pokemon.pkn_name or pokemon_check.pkn_name,
+                    "type_1": pokemon.type_1 or pokemon_check.type_1,
+                    "type_2": type_2,
+                    "generation": pokemon.generation or pokemon_check.generation,
+                    "is_legendary": is_legendary,
                 }
 
                 (
@@ -112,6 +120,14 @@ class PokemonsRepository:
                     .update(updated_data)
                 )
                 db.session.commit()
+                return Pokemon(
+                    pokemon_id=updated_data["pokemon_id"],
+                    pkn_name=updated_data["pkn_name"],
+                    type_1=updated_data["type_1"],
+                    type_2=updated_data["type_2"],
+                    generation=updated_data["generation"],
+                    is_legendary=updated_data["is_legendary"],
+                )
             except Exception as e:
                 db.session.rollback()
                 raise e

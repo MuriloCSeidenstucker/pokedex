@@ -1,7 +1,8 @@
+# pylint: disable=C0301:line-too-long, R0914:too-many-locals, R0915:too-many-statements
+
 import os
 from typing import Dict
 
-from rich.columns import Columns
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
@@ -10,7 +11,8 @@ from rich.table import Table
 from rich.text import Text
 
 from src.common.by import By
-from src.common.pokemon_type import POKEMON_TYPES, TYPE_COLORS, TYPE_ICONS
+from src.common.pokemon_type import POKEMON_TYPES
+from src.views.utils import render_types_panel
 
 console = Console()
 
@@ -19,15 +21,16 @@ class PokemonUpdateView:
     def pokemon_update_view(self) -> Dict:
         os.system("cls||clear")
 
-        title = Text("🛠️ Atualizar dados do Pokémon", style="bold yellow")
+        title = Text("Atualizar dados do Pokémon", style="bold yellow")
+        console.print(Panel.fit(title, border_style="bold yellow"))
 
+        options_title = Text("Selecione o Pokémon por:", style="bold yellow")
         options = Table.grid(padding=(0, 2))
         options.add_column(justify="right", style="cyan")
         options.add_column(style="white")
-        options.add_row("[bold]1[/bold]", "Atualizar por ID")
-        options.add_row("[bold]0[/bold]", "Atualizar por Nome")
-
-        console.print(Panel.fit(options, title=title, border_style="yellow"))
+        options.add_row("[bold]1[/bold]", "ID")
+        options.add_row("[bold]0[/bold]", "Nome")
+        console.print(Panel.fit(options, title=options_title, border_style="yellow"))
 
         by_input = Prompt.ask(
             "[bold yellow]Selecione uma opção[/bold yellow]",
@@ -44,30 +47,78 @@ class PokemonUpdateView:
             f"[bold green]Informe o {field_label}[/bold green]"
         ).strip()
 
-        pokemon_id = Prompt.ask("🔢 Informe o ID do Pokémon")
-        pkn_name = Prompt.ask("📛 Nome do Pokémon")
-        console.print("\n[bold magenta]Tipos Disponíveis:[/bold magenta]")
-        console.print(self.__render_types_panel())
-        type_1 = Prompt.ask(
-            "🧬 Tipo Primário", choices=POKEMON_TYPES, show_choices=False
+        selected_update_options = []
+        pokemon_id = None
+        pkn_name = None
+        type_1 = None
+        type_2 = None
+        generation = None
+        is_legendary = None
+        update_options_title = Text(
+            "Quais dados deseja atualizar?", style="bold yellow"
         )
-        type_2 = Prompt.ask(
-            "🧬 Tipo Secundário (opcional)", default="", show_default=False
+        update_options = Table.grid(padding=(0, 2))
+        update_options.add_column(justify="right", style="cyan")
+        update_options.add_column(style="white")
+        update_options.add_row("[bold]0[/bold]", "Atualizar ID")
+        update_options.add_row("[bold]1[/bold]", "Atualizar Nome")
+        update_options.add_row("[bold]2[/bold]", "Atualizar Tipo Primário")
+        update_options.add_row("[bold]3[/bold]", "Atualizar Tipo Secundário")
+        update_options.add_row("[bold]4[/bold]", "Atualizar Geração")
+        update_options.add_row("[bold]5[/bold]", "Atualizar Status Lendário")
+        update_options.add_row("[bold]6[/bold]", "Avançar")
+        console.print(
+            Panel.fit(update_options, title=update_options_title, border_style="yellow")
         )
-        generation = Prompt.ask("🕰️ Geração")
-
-        is_legendary = Prompt.ask(
-            "🌟 Este Pokémon é lendário? ([bold cyan]1[/]/Sim | [bold cyan]0[/]/Não)",
-            choices=["1", "0"],
-        )
+        while True:
+            if len(selected_update_options) == 6:
+                break
+            selected_option = Prompt.ask(
+                "Escolha",
+                choices=["0", "1", "2", "3", "4", "5", "6"],
+                show_choices=False,
+            )
+            if selected_option == "6":
+                break
+            if selected_option not in selected_update_options:
+                match selected_option:
+                    case "0":
+                        pokemon_id = Prompt.ask("🔢 Informe o ID do Pokémon").strip()
+                    case "1":
+                        pkn_name = Prompt.ask("📛 Nome do Pokémon").strip()
+                    case "2":
+                        render_types_panel()
+                        type_1 = Prompt.ask(
+                            "🧬 Tipo Primário",
+                            choices=POKEMON_TYPES,
+                            show_choices=False,
+                        ).strip()
+                    case "3":
+                        render_types_panel()
+                        type_2 = Prompt.ask(
+                            "🧬 Tipo Secundário (opcional)",
+                            choices=POKEMON_TYPES + [""],
+                            show_choices=False,
+                        ).strip()
+                    case "4":
+                        generation = Prompt.ask("🕰️ Geração").strip()
+                    case "5":
+                        is_legendary = Prompt.ask(
+                            "🌟 Este Pokémon é lendário? ([bold cyan]1[/]/Sim | [bold cyan]0[/]/Não)",
+                            choices=["1", "0"],
+                        ).strip()
+                selected_update_options.append(selected_option)
+            else:
+                console.print(f"Você já selecionou a opção '{selected_option}'")
+                console.print("Selecione outra opção ou precione '6' para avançar")
 
         updated_pokemon_info = {
-            "pokemon_id": pokemon_id.strip(),
-            "pkn_name": pkn_name.strip(),
-            "type_1": type_1.strip(),
-            "type_2": type_2.strip(),
-            "generation": generation.strip(),
-            "is_legendary": is_legendary.strip(),
+            "pokemon_id": pokemon_id,
+            "pkn_name": pkn_name,
+            "type_1": type_1,
+            "type_2": type_2,
+            "generation": generation,
+            "is_legendary": is_legendary,
         }
 
         return {"by": by, "value": value, "pokemon_data": updated_pokemon_info}
@@ -114,12 +165,3 @@ class PokemonUpdateView:
         console.print(
             Panel(syntax, title="📋 Detalhes Técnicos", border_style="grey50")
         )
-
-    def __render_types_panel(self):
-        panels = []
-        for type_name in POKEMON_TYPES:
-            color = TYPE_COLORS.get(type_name, "white")
-            icon = TYPE_ICONS.get(type_name, "")
-            text = Text(f"{icon} {type_name}", style=f"bold {color}")
-            panels.append(Panel(text, expand=True, border_style=color))
-        return Columns(panels, equal=True, expand=True)

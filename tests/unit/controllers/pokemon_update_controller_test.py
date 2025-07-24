@@ -28,6 +28,7 @@ def test_update(mocker: MockerFixture):
         "src.models.repositories.pokemons_repository.PokemonsRepository"
     )
     mock_repo.update_pokemon = mocker.MagicMock()
+    mock_repo.update_pokemon.return_value = mock_pokemon
 
     controller = PokemonUpdateController(mock_repo)
     response = controller.update("id", "1", mock_data)
@@ -59,13 +60,13 @@ def test_update(mocker: MockerFixture):
             "id",
             "1",
             {},
-            '{"generation": ["required field"], "is_legendary": ["required field"], "pkn_name": ["required field"], "pokemon_id": ["required field"], "type_1": ["required field"]}',
+            "'pokemon_data' is a required field",
         ),
         (
             "id",
             "1",
             {"pokemon_id": "abc"},
-            '{"generation": ["required field"], "is_legendary": ["required field"], "pkn_name": ["required field"], "pokemon_id": ["field \'pokemon_id\' cannot be coerced: invalid literal for int() with base 10: \'abc\'", "must be of integer type"], "type_1": ["required field"]}',
+            '{"pokemon_id": ["field \'pokemon_id\' cannot be coerced: invalid literal for int() with base 10: \'abc\'", "must be of integer type"]}',
         ),
     ],
 )
