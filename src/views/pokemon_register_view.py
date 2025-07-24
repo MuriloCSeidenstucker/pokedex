@@ -1,7 +1,6 @@
 import os
 from typing import Dict
 
-from rich.columns import Columns
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
@@ -9,7 +8,8 @@ from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
 
-from src.common.pokemon_type import POKEMON_TYPES, TYPE_COLORS, TYPE_ICONS
+from src.common.pokemon_type import POKEMON_TYPES
+from src.views.utils import render_types_panel
 
 console = Console()
 
@@ -23,13 +23,14 @@ class PokemonRegisterView:
 
         pokemon_id = Prompt.ask("🔢 Informe o ID do Pokémon")
         pkn_name = Prompt.ask("📛 Nome do Pokémon")
-        console.print("\n[bold magenta]Tipos Disponíveis:[/bold magenta]")
-        console.print(self.__render_types_panel())
+        render_types_panel()
         type_1 = Prompt.ask(
             "🧬 Tipo Primário", choices=POKEMON_TYPES, show_choices=False
         )
         type_2 = Prompt.ask(
-            "🧬 Tipo Secundário (opcional)", default="", show_default=False
+            "🧬 Tipo Secundário (opcional)",
+            choices=POKEMON_TYPES + [""],
+            show_choices=False,
         )
         generation = Prompt.ask("🕰️ Geração")
 
@@ -92,12 +93,3 @@ class PokemonRegisterView:
         console.print(
             Panel(syntax, title="📋 Detalhes Técnicos", border_style="grey50")
         )
-
-    def __render_types_panel(self):
-        panels = []
-        for type_name in POKEMON_TYPES:
-            color = TYPE_COLORS.get(type_name, "white")
-            icon = TYPE_ICONS.get(type_name, "")
-            text = Text(f"{icon} {type_name}", style=f"bold {color}")
-            panels.append(Panel(text, expand=True, border_style=color))
-        return Columns(panels, equal=True, expand=True)
