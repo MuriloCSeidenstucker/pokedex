@@ -224,8 +224,10 @@ def test_select_all_pokemons(mocker: MockerFixture):
         is_legendary=0,
     )
     expected_pokemons = [mock_pokemon_1, mock_pokemon_2]
+    mock_order_by = mocker.MagicMock()
+    mock_order_by.all.return_value = expected_pokemons
     mock_query = mocker.MagicMock()
-    mock_query.all.return_value = expected_pokemons
+    mock_query.order_by.return_value = mock_order_by
     mock_session = mocker.MagicMock()
     mock_session.query.return_value = mock_query
     mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
@@ -242,10 +244,11 @@ def test_select_all_pokemons(mocker: MockerFixture):
     )
 
     repo = PokemonsRepository()
-    response = repo.select_all_pokemons()
+    response = repo.select_all_pokemons(None)
 
     mock_session.query.assert_called_once_with(PokemonsEntity)
-    mock_query.all.assert_called_once()
+    mock_query.order_by.assert_called_once_with(PokemonsEntity.pokemon_id)
+    mock_order_by.all.assert_called_once()
     mock_session.rollback.assert_not_called()
     assert isinstance(response, List)
     assert response == expected_pokemons
@@ -255,8 +258,10 @@ def test_select_all_pokemons(mocker: MockerFixture):
 
 
 def test_select_all_pokemons_not_found_error(mocker: MockerFixture):
+    mock_order_by = mocker.MagicMock()
+    mock_order_by.all.return_value = None
     mock_query = mocker.MagicMock()
-    mock_query.all.return_value = None
+    mock_query.order_by.return_value = mock_order_by
     mock_session = mocker.MagicMock()
     mock_session.query.return_value = mock_query
     mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
@@ -274,20 +279,23 @@ def test_select_all_pokemons_not_found_error(mocker: MockerFixture):
 
     repo = PokemonsRepository()
     try:
-        repo.select_all_pokemons()
+        repo.select_all_pokemons(None)
         assert False, "Expected exception not raised"
     except Exception as e:
         assert isinstance(e, PokemonNotFoundError)
         assert str(e) == "No pokemon found in repository"
 
     mock_session.query.assert_called_once_with(PokemonsEntity)
-    mock_query.all.assert_called_once()
+    mock_query.order_by.assert_called_once_with(PokemonsEntity.pokemon_id)
+    mock_order_by.all.assert_called_once()
     mock_session.rollback.assert_called_once()
 
 
 def test_select_all_pokemons_unknown_error(mocker: MockerFixture):
+    mock_order_by = mocker.MagicMock()
+    mock_order_by.all.side_effect = Exception("unknown")
     mock_query = mocker.MagicMock()
-    mock_query.all.side_effect = Exception("unknown")
+    mock_query.order_by.return_value = mock_order_by
     mock_session = mocker.MagicMock()
     mock_session.query.return_value = mock_query
     mock_sessionmaker = mocker.MagicMock(return_value=mock_session)
@@ -305,13 +313,14 @@ def test_select_all_pokemons_unknown_error(mocker: MockerFixture):
 
     repo = PokemonsRepository()
     try:
-        repo.select_all_pokemons()
+        repo.select_all_pokemons(None)
         assert False, "Expected exception not raised"
     except Exception as e:
         assert str(e) == "unknown"
 
     mock_session.query.assert_called_once_with(PokemonsEntity)
-    mock_query.all.assert_called_once()
+    mock_query.order_by.assert_called_once_with(PokemonsEntity.pokemon_id)
+    mock_order_by.all.assert_called_once()
     mock_session.rollback.assert_called_once()
 
 

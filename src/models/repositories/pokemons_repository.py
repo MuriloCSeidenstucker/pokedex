@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 from sqlalchemy.exc import IntegrityError
 
@@ -10,6 +10,10 @@ from src.models.settings.connection import DBConnectionHandler
 column_map = {
     "id": PokemonsEntity.pokemon_id,
     "name": PokemonsEntity.pkn_name,
+    "type_1": PokemonsEntity.type_1,
+    "type_2": PokemonsEntity.type_2,
+    "generation": PokemonsEntity.generation,
+    "is_legendary": PokemonsEntity.is_legendary,
 }
 
 
@@ -70,10 +74,23 @@ class PokemonsRepository:
                 db.session.rollback()
                 raise e
 
-    def select_all_pokemons(self) -> List[Pokemon]:
+    def select_all_pokemons(self, request: Dict) -> List[Pokemon]:
         with DBConnectionHandler() as db:
             try:
-                pokemons = db.session.query(PokemonsEntity).all()
+                query = db.session.query(PokemonsEntity)
+
+                if request:
+                    if request.get("type_1") is not None:
+                        query = query.filter_by(type_1=request["type_1"])
+                    if request.get("type_2") is not None:
+                        query = query.filter_by(type_2=request["type_2"])
+                    if request.get("generation") is not None:
+                        query = query.filter_by(generation=request["generation"])
+                    if request.get("is_legendary") is not None:
+                        query = query.filter_by(is_legendary=request["is_legendary"])
+
+                pokemons = query.order_by(PokemonsEntity.pokemon_id).all()
+
                 if not pokemons:
                     raise PokemonNotFoundError("No pokemon found in repository")
                 return pokemons

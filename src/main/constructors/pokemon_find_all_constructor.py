@@ -8,7 +8,8 @@ def pokemon_find_all_constructor() -> None:
     pokemon_find_all_view = PokemonFindAllView()
     pokemon_find_all_controller = PokemonFindAllController(pokemons_repository)
 
-    response = pokemon_find_all_controller.find_all()
+    request = pokemon_find_all_view.find_all_pokemon_view()
+    response = pokemon_find_all_controller.find_all(request)
     if response["success"]:
         pokemon_find_all_view.find_all_pokemons_success(response["message"])
     else:

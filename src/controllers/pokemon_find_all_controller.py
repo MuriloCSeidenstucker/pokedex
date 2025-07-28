@@ -10,17 +10,19 @@ class PokemonFindAllController:
         self.__pokemons_repository = pokemons_repository
         self.error_handler = ErrorHandler()
 
-    def find_all(self) -> Dict:
+    def find_all(self, request: Dict) -> Dict:
         try:
-            pokemons = self.__fetch_all()
+            pokemons = self.__fetch_all(request)
             response = self.__format_response(pokemons)
             return {"success": True, "message": response}
         except Exception as e:
             error = self.error_handler.handle_error(e)
             return {"success": False, "error": error}
 
-    def __fetch_all(self) -> List[Pokemon]:
-        pokemons = self.__pokemons_repository.select_all_pokemons()
+    def __fetch_all(self, request: Dict) -> List[Pokemon]:
+        if all(value is None for value in request.values()):
+            request = None
+        pokemons = self.__pokemons_repository.select_all_pokemons(request)
         return pokemons
 
     def __format_response(self, pokemons: List[Pokemon]) -> Dict:

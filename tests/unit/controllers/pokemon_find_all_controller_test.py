@@ -30,7 +30,7 @@ def test_find_all(mocker: MockerFixture):
     mock_repo.select_all_pokemons.return_value = mock_response
 
     controller = PokemonFindAllController(mock_repo)
-    response = controller.find_all()
+    response = controller.find_all({})
 
     assert response["success"]
     assert response["message"]["count"] == 2
@@ -55,7 +55,7 @@ def test_find_all_error(mocker: MockerFixture):
     )
 
     controller = PokemonFindAllController(mock_repo)
-    response = controller.find_all()
+    response = controller.find_all({})
 
     assert not response["success"]
     assert response["error"] == expected_error

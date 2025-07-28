@@ -1,18 +1,94 @@
+# pylint: disable=C0301:line-too-long
+
 import os
 from typing import Dict
 
 from rich.console import Console
 from rich.panel import Panel
+from rich.prompt import Prompt
 from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
 
-from src.common.pokemon_type import TYPE_COLORS
+from src.common.pokemon_type import POKEMON_TYPES, TYPE_COLORS
+from src.views.utils import render_types_panel
 
 console = Console()
 
 
 class PokemonFindAllView:
+    def find_all_pokemon_view(self) -> Dict:
+        os.system("cls||clear")
+
+        title = Text("Buscar por Pokémons", style="bold yellow")
+        console.print(Panel.fit(title, border_style="bold yellow"))
+
+        selected_update_options = []
+        type_1 = None
+        type_2 = None
+        generation = None
+        is_legendary = None
+        update_options_title = Text(
+            "Deseja buscar por algo específico?", style="bold yellow"
+        )
+        update_options = Table.grid(padding=(0, 2))
+        update_options.add_column(justify="right", style="cyan")
+        update_options.add_column(style="white")
+        update_options.add_row("[bold]0[/bold]", "Tipo Primário")
+        update_options.add_row("[bold]1[/bold]", "Tipo Secundário")
+        update_options.add_row("[bold]2[/bold]", "Geração")
+        update_options.add_row("[bold]3[/bold]", "Status Lendário")
+        update_options.add_row("[bold]4[/bold]", "Avançar")
+        console.print(
+            Panel.fit(update_options, title=update_options_title, border_style="yellow")
+        )
+        while True:
+            if len(selected_update_options) == 4:
+                break
+            selected_option = Prompt.ask(
+                "Escolha",
+                choices=["0", "1", "2", "3", "4"],
+                show_choices=False,
+            )
+            if selected_option == "4":
+                break
+            if selected_option not in selected_update_options:
+                match selected_option:
+                    case "0":
+                        render_types_panel()
+                        type_1 = Prompt.ask(
+                            "🧬 Tipo Primário",
+                            choices=POKEMON_TYPES,
+                            show_choices=False,
+                        ).strip()
+                    case "1":
+                        render_types_panel()
+                        type_2 = Prompt.ask(
+                            "🧬 Tipo Secundário (opcional)",
+                            choices=POKEMON_TYPES + [""],
+                            show_choices=False,
+                        ).strip()
+                    case "2":
+                        generation = Prompt.ask("🕰️ Geração").strip()
+                    case "3":
+                        is_legendary = Prompt.ask(
+                            "🌟 Este Pokémon é lendário? ([bold cyan]1[/]/Sim | [bold cyan]0[/]/Não)",
+                            choices=["1", "0"],
+                        ).strip()
+                selected_update_options.append(selected_option)
+            else:
+                console.print(f"Você já selecionou a opção '{selected_option}'")
+                console.print("Selecione outra opção ou precione '4' para avançar")
+
+        request_filter = {
+            "type_1": type_1,
+            "type_2": type_2,
+            "generation": generation,
+            "is_legendary": is_legendary,
+        }
+
+        return request_filter
+
     def find_all_pokemons_success(self, message: Dict) -> None:
         os.system("cls||clear")
 
