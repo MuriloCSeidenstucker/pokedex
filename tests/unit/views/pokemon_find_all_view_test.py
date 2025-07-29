@@ -1,7 +1,53 @@
+from typing import Dict, List
+
+import pytest
 from pytest_mock import MockerFixture
 
 from src.common.pokemon import Pokemon
 from src.views.pokemon_find_all_view import PokemonFindAllView
+
+
+@pytest.mark.parametrize(
+    "mock_inputs,key_to_index_map,expected_calls",
+    [
+        (
+            ["0", "fire", "1", "", "2", "1", "3", "0"],
+            {"type_1": 1, "type_2": 3, "generation": 5, "is_legendary": 7},
+            {"prompt_calls": 8, "print_calls": 6},
+        ),
+        (
+            ["0", "fire", "1", "grass", "0", "4"],
+            {"type_1": 1, "type_2": 3},
+            {"prompt_calls": 6, "print_calls": 8},
+        ),
+    ],
+)
+def test_find_all_pokemon_view(
+    mock_inputs: List,
+    key_to_index_map: Dict,
+    expected_calls: Dict,
+    mocker: MockerFixture,
+):
+    mock_os_system = mocker.patch("os.system")
+    mock_print = mocker.patch("rich.console.Console.print")
+    mock_panel = mocker.patch("rich.panel.Panel.fit")
+    mock_prompt = mocker.patch("rich.prompt.Prompt.ask", side_effect=mock_inputs)
+    mock_add_column = mocker.patch("rich.table.Table.add_column")
+    mock_add_row = mocker.patch("rich.table.Table.add_row")
+
+    view = PokemonFindAllView()
+    response = view.find_all_pokemon_view()
+
+    mock_os_system.assert_called_once_with("cls||clear")
+    assert mock_print.call_count == expected_calls.get("print_calls")
+    assert mock_panel.call_count == 2
+    assert mock_prompt.call_count == expected_calls.get("prompt_calls")
+    assert mock_add_column.call_count == 2
+    assert mock_add_row.call_count == 5
+    assert all(
+        response.get(key) == mock_inputs[index]
+        for key, index in key_to_index_map.items()
+    )
 
 
 def test_find_all_pokemons_success(mocker: MockerFixture):
@@ -26,6 +72,7 @@ def test_find_all_pokemons_success(mocker: MockerFixture):
         ]
     }
 
+    mock_os_system = mocker.patch("os.system")
     mock_add_column = mocker.MagicMock()
     mocker.patch("rich.table.Table.add_column", side_effect=mock_add_column)
     mock_add_row = mocker.MagicMock()
@@ -36,6 +83,7 @@ def test_find_all_pokemons_success(mocker: MockerFixture):
     view = PokemonFindAllView()
     view.find_all_pokemons_success(mock_message)
 
+    mock_os_system.assert_called_once_with("cls||clear")
     mock_add_column.assert_called()
     mock_add_row.assert_called()
     mock_print.assert_called_once()
