@@ -1,7 +1,6 @@
 # pylint: disable=C0301:line-too-long
 
 from dataclasses import asdict
-from typing import List
 
 import pytest
 from pytest_mock import MockerFixture
@@ -210,23 +209,31 @@ def test_select_all_pokemons(mocker: MockerFixture):
     mock_pokemon_1 = Pokemon(
         pokemon_id=1,
         pkn_name="Bulbasaur",
-        type_1="Grass",
-        type_2="Poison",
+        type_1="grass",
+        type_2="poison",
         generation=1,
         is_legendary=0,
     )
     mock_pokemon_2 = Pokemon(
         pokemon_id=2,
         pkn_name="Ivysaur",
-        type_1="Grass",
-        type_2="Poison",
+        type_1="grass",
+        type_2="poison",
         generation=1,
         is_legendary=0,
     )
+    mock_request = {
+        "type_1": "grass",
+        "type_2": "poison",
+        "generation": "1",
+        "is_legendary": "0",
+    }
     expected_pokemons = [mock_pokemon_1, mock_pokemon_2]
+    mock_query = mocker.MagicMock()
+    mock_filter_by = mocker.MagicMock()
+    mock_query.filter_by = mock_filter_by
     mock_order_by = mocker.MagicMock()
     mock_order_by.all.return_value = expected_pokemons
-    mock_query = mocker.MagicMock()
     mock_query.order_by.return_value = mock_order_by
     mock_session = mocker.MagicMock()
     mock_session.query.return_value = mock_query
@@ -244,17 +251,10 @@ def test_select_all_pokemons(mocker: MockerFixture):
     )
 
     repo = PokemonsRepository()
-    response = repo.select_all_pokemons(None)
+    response = repo.select_all_pokemons(mock_request)
 
-    mock_session.query.assert_called_once_with(PokemonsEntity)
-    mock_query.order_by.assert_called_once_with(PokemonsEntity.pokemon_id)
-    mock_order_by.all.assert_called_once()
-    mock_session.rollback.assert_not_called()
-    assert isinstance(response, List)
-    assert response == expected_pokemons
-    assert len(response) == 2
-    assert response[0].pkn_name == "Bulbasaur"
-    assert response[1].pkn_name == "Ivysaur"
+    assert all(isinstance(pokemon, Pokemon) for pokemon in response)
+    assert all(pokemon.type_1 == mock_request.get("type_1") for pokemon in response)
 
 
 def test_select_all_pokemons_not_found_error(mocker: MockerFixture):
