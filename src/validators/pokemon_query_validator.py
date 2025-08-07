@@ -1,3 +1,9 @@
+"""Validador de entrada para buscas de Pokémon por ID ou nome.
+
+Contém uma extensão da classe `Validator` do Cerberus com validação 
+condicional personalizada baseada no campo `by`.
+"""
+
 import json
 from typing import Any
 
@@ -35,6 +41,22 @@ class QueryValidator(Validator):
 
 
 def pokemon_query_validator(request: Any):
+    """Valida os dados de entrada para buscas por Pokémon.
+
+    Espera um dicionário contendo os campos:
+    - `by`: string obrigatória com valor "id" ou "name".
+    - `value`: string obrigatória, cujo tipo será validado de acordo com o campo `by`.
+
+    Regras aplicadas:
+    - Se `by` for "id", `value` deve conter apenas dígitos.
+    - Se `by` for "name", `value` não pode ser numérico.
+
+    Args:
+        request (Any): Dicionário com os dados da requisição de busca.
+
+    Raises:
+        InvalidFieldValueError: Se os dados forem inválidos conforme as regras definidas.
+    """
     schema = {
         "by": {
             "type": "string",
