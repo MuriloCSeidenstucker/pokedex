@@ -1,3 +1,9 @@
+"""Repositório responsável pelas operações de persistência da entidade Pokémon.
+
+Este módulo implementa o padrão Repository, isolando a lógica de acesso
+a dados da aplicação. Utiliza SQLAlchemy para interagir com a base.
+"""
+
 from typing import Dict, List
 
 from sqlalchemy.exc import IntegrityError
@@ -18,7 +24,18 @@ column_map = {
 
 
 class PokemonsRepository:
+    """Classe repositório que encapsula operações CRUD para Pokémon."""
+
     def insert_pokemon(self, pokemon: Pokemon) -> None:
+        """Insere um novo Pokémon no banco de dados.
+
+        Args:
+            pokemon (Pokemon): Objeto com os dados do Pokémon a ser inserido.
+
+        Raises:
+            DuplicatePokemonError: Se o ID ou nome do Pokémon já estiverem cadastrados.
+            Exception: Outros erros de persistência.
+        """
         with DBConnectionHandler() as db:
             try:
                 new_registry = PokemonsEntity(
@@ -46,6 +63,20 @@ class PokemonsRepository:
                 raise e
 
     def select_pokemon(self, by: str, value: str) -> Pokemon:
+        """Busca um Pokémon com base em um critério (ID ou nome).
+
+        Args:
+            by (str): Campo utilizado como critério de busca ("id" ou "name").
+            value (str): Valor a ser buscado.
+
+        Returns:
+            Pokemon: Objeto contendo os dados do Pokémon encontrado.
+
+        Raises:
+            ValueError: Se o campo `by` for inválido.
+            PokemonNotFoundError: Se o Pokémon não for encontrado.
+            Exception: Outros erros de consulta.
+        """
         if by not in column_map:
             raise ValueError(f"Invalid argument: {by}")
 
@@ -75,6 +106,20 @@ class PokemonsRepository:
                 raise e
 
     def select_all_pokemons(self, request: Dict) -> List[Pokemon]:
+        """Busca todos os Pokémons com base em filtros opcionais.
+
+        Filtros possíveis: type_1, type_2, generation, is_legendary.
+
+        Args:
+            request (Dict): Dicionário com filtros opcionais.
+
+        Returns:
+            List[Pokemon]: Lista de Pokémons encontrados.
+
+        Raises:
+            PokemonNotFoundError: Se nenhum Pokémon for encontrado.
+            Exception: Outros erros de consulta.
+        """
         with DBConnectionHandler() as db:
             try:
                 query = db.session.query(PokemonsEntity)
@@ -99,6 +144,23 @@ class PokemonsRepository:
                 raise e
 
     def update_pokemon(self, by: str, value: str, pokemon: Pokemon) -> Pokemon:
+        """Atualiza os dados de um Pokémon existente.
+
+        Os campos não informados serão mantidos com os valores anteriores.
+
+        Args:
+            by (str): Campo de busca ("id" ou "name").
+            value (str): Valor a ser usado como critério.
+            pokemon (Pokemon): Dados novos para atualização (parcial).
+
+        Returns:
+            Pokemon: Objeto com os dados atualizados.
+
+        Raises:
+            ValueError: Se `by` for inválido.
+            PokemonNotFoundError: Se o Pokémon não existir.
+            Exception: Outros erros de atualização.
+        """
         if by not in column_map:
             raise ValueError(f"Invalid argument: {by}")
 
@@ -150,6 +212,20 @@ class PokemonsRepository:
                 raise e
 
     def delete_pokemon(self, by: str, value: str) -> Pokemon:
+        """Remove um Pokémon do banco de dados com base em um critério.
+
+        Args:
+            by (str): Campo de busca ("id" ou "name").
+            value (str): Valor correspondente ao campo.
+
+        Returns:
+            Pokemon: Dados do Pokémon removido.
+
+        Raises:
+            ValueError: Se `by` for inválido.
+            PokemonNotFoundError: Se o Pokémon não existir.
+            Exception: Outros erros de remoção.
+        """
         if by not in column_map:
             raise ValueError(f"Invalid argument: {by}")
 
