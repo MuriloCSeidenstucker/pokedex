@@ -1,3 +1,9 @@
+"""Módulo principal responsável por gerenciar o fluxo da Pokédex CLI.
+
+Este módulo apresenta o menu inicial e direciona as chamadas para as
+diferentes funcionalidades de acordo com o comando selecionado pelo usuário.
+"""
+
 import os
 from enum import Enum
 from typing import Optional
@@ -16,6 +22,8 @@ from .constructors.introduction_process import introduction_process
 
 
 class Command(Enum):
+    """Enumeração de comandos disponíveis na Pokédex."""
+
     REGISTER_POKEMON = "1"
     SEARCH_POKEMON = "2"
     LIST_ALL_POKEMON = "3"
@@ -28,6 +36,11 @@ console = Console()
 
 
 def start() -> None:
+    """Inicia o fluxo principal da Pokédex.
+
+    Exibe o menu de comandos e executa os fluxos associados,
+    até que o usuário escolha sair.
+    """
     while True:
         command = __display_menu_and_get_command()
         if not __execute_command(command):
@@ -35,10 +48,25 @@ def start() -> None:
 
 
 def __display_menu_and_get_command() -> Optional[str]:
+    """Exibe o menu inicial da Pokédex e lê a escolha do usuário.
+
+    Returns:
+        Optional[str]: Comando selecionado pelo usuário.
+    """
     return introduction_process()
 
 
 def __execute_command(command: Optional[str]) -> bool:
+    """Executa o processo correspondente ao comando informado.
+
+    Mapeia o comando para seu respectivo construtor e o executa.
+
+    Args:
+        command (Optional[str]): Comando digitado pelo usuário.
+
+    Returns:
+        bool: `True` para continuar no app, `False` para encerrar.
+    """
     command_map = {
         Command.REGISTER_POKEMON.value: pokemon_register_constructor,
         Command.SEARCH_POKEMON.value: pokemon_find_constructor,
