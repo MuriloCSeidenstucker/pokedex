@@ -1,3 +1,9 @@
+"""Define os tipos de Pokémon aceitos e suas representações visuais.
+
+Contém listas, ícones e cores para uso nas validações, exibição no terminal
+e padronização de entradas no sistema.
+"""
+
 from dataclasses import dataclass
 
 TYPE_COLORS = {
@@ -66,6 +72,13 @@ POKEMON_TYPES = [
 
 @dataclass
 class PokemonType:
+    """Enumeração dos tipos de Pokémon disponíveis.
+
+    Esta classe fornece constantes reutilizáveis que representam os tipos
+    reconhecidos pelo sistema. É útil para evitar o uso de strings soltas
+    ao longo do código.
+    """
+
     NORMAL = "normal"
     FIRE = "fire"
     WATER = "water"
