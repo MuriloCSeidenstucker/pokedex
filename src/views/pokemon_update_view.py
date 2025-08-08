@@ -1,3 +1,9 @@
+"""Interface CLI para atualização de dados de um Pokémon.
+
+Este módulo permite ao usuário selecionar um Pokémon e atualizar atributos específicos,
+como nome, tipos, geração e status lendário. O fluxo é interativo e visual.
+"""
+
 # pylint: disable=C0301:line-too-long, R0914:too-many-locals, R0915:too-many-statements
 
 import os
@@ -18,7 +24,22 @@ console = Console()
 
 
 class PokemonUpdateView:
+    """Classe responsável pela interface visual do processo de atualização de Pokémon."""
+
     def pokemon_update_view(self) -> Dict:
+        """Coleta os dados necessários para atualizar um Pokémon existente.
+
+        O usuário pode:
+        - Escolher se deseja buscar o Pokémon por ID ou nome.
+        - Selecionar os atributos a serem atualizados (um ou mais).
+        - Inserir os novos valores para os campos escolhidos.
+
+        Returns:
+            Dict: Contendo:
+                - `by` (str): Tipo de busca ("id" ou "name").
+                - `value` (str): Valor correspondente ao campo `by`.
+                - `pokemon_data` (Dict): Campos selecionados com os novos valores.
+        """
         os.system("cls||clear")
 
         title = Text("Atualizar dados do Pokémon", style="bold yellow")
@@ -124,6 +145,11 @@ class PokemonUpdateView:
         return {"by": by, "value": value, "pokemon_data": updated_pokemon_info}
 
     def pokemon_update_success(self, message: Dict) -> None:
+        """Exibe mensagem de sucesso e os dados atualizados do Pokémon.
+
+        Args:
+            message (Dict): Dicionário contendo os dados atualizados e metadados.
+        """
         attrs = message["attributes"]
 
         os.system("cls||clear")
@@ -149,6 +175,13 @@ class PokemonUpdateView:
         console.print(panel)
 
     def pokemon_update_fail(self, error: Dict) -> None:
+        """Exibe mensagem de erro estilizada em caso de falha na atualização.
+
+        Mostra o código de status, tipo de erro e detalhes técnicos.
+
+        Args:
+            error (Dict): Dicionário contendo informações sobre o erro.
+        """
         os.system("cls||clear")
 
         title_text = Text("❌ Falha ao tentar atualizar o Pokémon!", style="bold red")

@@ -1,3 +1,9 @@
+"""Interface CLI para o fluxo de listagem de Pokémons com filtros.
+
+Este módulo permite ao usuário realizar buscas com múltiplos critérios,
+exibindo os resultados com formatação visual por tipo, geração e status.
+"""
+
 # pylint: disable=C0301:line-too-long
 
 import os
@@ -17,7 +23,22 @@ console = Console()
 
 
 class PokemonFindAllView:
+    """Classe responsável pela interface visual de listagem de Pokémons."""
+
     def find_all_pokemon_view(self) -> Dict:
+        """Exibe o menu de filtros e coleta os critérios de busca do usuário.
+
+        O usuário pode selecionar múltiplos filtros:
+        - Tipo primário
+        - Tipo secundário
+        - Geração
+        - Se é lendário
+
+        A seleção é interativa, e os filtros podem ser usados em combinação.
+
+        Returns:
+            Dict: Dicionário contendo os filtros selecionados.
+        """
         os.system("cls||clear")
 
         title = Text("Buscar por Pokémons", style="bold yellow")
@@ -90,6 +111,16 @@ class PokemonFindAllView:
         return request_filter
 
     def find_all_pokemons_success(self, message: Dict) -> None:
+        """Exibe a lista de Pokémons encontrados com base nos filtros aplicados.
+
+        Os Pokémons são mostrados em uma tabela formatada com:
+        - Cores dos tipos
+        - Geração
+        - Indicador visual de lendário
+
+        Args:
+            message (Dict): Dicionário com a lista de Pokémons no campo 'attributes'.
+        """
         os.system("cls||clear")
 
         title = Text("📋 Lista de Pokémons Registrados", style="bold green")
@@ -139,6 +170,13 @@ class PokemonFindAllView:
         console.print(panel)
 
     def find_all_pokemons_fail(self, error: Dict) -> None:
+        """Exibe mensagem de erro estilizada caso nenhum Pokémon seja encontrado.
+
+        Mostra código de status, nome do erro e detalhes técnicos.
+
+        Args:
+            error (Dict): Dicionário contendo nome, código e detalhes do erro.
+        """
         os.system("cls||clear")
 
         title_text = Text("⚠️ Nenhum Pokémon Encontrado", style="bold red")

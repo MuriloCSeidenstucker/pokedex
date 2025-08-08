@@ -1,3 +1,10 @@
+"""Interface CLI para o fluxo de cadastro de Pokémons.
+
+Este módulo é responsável por interações com o usuário durante o processo
+de registro de um novo Pokémon, exibindo prompts e mensagens estilizadas
+com a biblioteca `rich`.
+"""
+
 import os
 from typing import Dict
 
@@ -15,7 +22,18 @@ console = Console()
 
 
 class PokemonRegisterView:
+    """Classe responsável pela interface visual do cadastro de Pokémons."""
+
     def registry_pokemon_view(self) -> Dict:
+        """Exibe prompts para o usuário informar os dados do novo Pokémon.
+
+        Retorna um dicionário com os dados informados pelo usuário, prontos
+        para validação e persistência. Os campos incluem ID, nome, tipos,
+        geração e flag de lendário.
+
+        Returns:
+            Dict: Dados do Pokémon preenchidos via input do usuário.
+        """
         os.system("cls||clear")
 
         title = Text("🐣 Cadastro de Novo Pokémon", style="bold green")
@@ -51,6 +69,14 @@ class PokemonRegisterView:
         return new_pokemon_info
 
     def registry_pokemon_success(self, message: Dict) -> None:
+        """Exibe mensagem visual de sucesso após o cadastro do Pokémon.
+
+        Apresenta os dados do Pokémon recém-cadastrado e informações
+        adicionais como tipo de registro.
+
+        Args:
+            message (Dict): Mensagem de sucesso contendo os atributos e metadados.
+        """
         attrs = message["attributes"]
 
         os.system("cls||clear")
@@ -77,6 +103,13 @@ class PokemonRegisterView:
         console.print(panel)
 
     def registry_pokemon_fail(self, error: Dict) -> None:
+        """Exibe mensagem de erro estilizada caso o cadastro falhe.
+
+        Mostra código de status, nome do erro e detalhes técnicos.
+
+        Args:
+            error (Dict): Dicionário contendo nome, código e detalhes do erro.
+        """
         os.system("cls||clear")
 
         title_text = Text("❌ Falha ao Cadastrar Pokémon!", style="bold red")

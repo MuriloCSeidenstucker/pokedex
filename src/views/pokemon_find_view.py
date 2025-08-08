@@ -1,3 +1,9 @@
+"""Interface CLI para o fluxo de busca de um Pokémon individual.
+
+Este módulo exibe prompts para o usuário informar os critérios de busca 
+e apresenta os resultados ou mensagens de erro com formatação visual.
+"""
+
 import os
 from typing import Dict
 
@@ -14,7 +20,19 @@ console = Console()
 
 
 class PokemonFindView:
+    """Classe responsável pela interface visual de busca individual de Pokémon."""
+
     def pokemon_find_view(self) -> Dict:
+        """Coleta os critérios de busca (ID ou nome) fornecidos pelo usuário.
+
+        O usuário pode optar por buscar um Pokémon usando seu ID ou nome.
+        A função exibe opções visuais e solicita o valor correspondente.
+
+        Returns:
+            Dict: Dicionário com os campos:
+                - "by": tipo de busca ("id" ou "name").
+                - "value": valor a ser buscado.
+        """
         os.system("cls||clear")
 
         title = Text("🔎 Buscar Pokémon na Pokédex", style="bold blue")
@@ -46,6 +64,15 @@ class PokemonFindView:
         return {"by": by, "value": value}
 
     def pokemon_find_success(self, message: Dict) -> None:
+        """Exibe os dados do Pokémon encontrado.
+
+        Mostra os atributos do Pokémon (ID, nome, tipos, geração, etc.)
+        e detalhes da busca realizada, incluindo número de registros
+        e tipo de busca utilizada.
+
+        Args:
+            message (Dict): Dicionário com os dados do Pokémon e metainformações.
+        """
         os.system("cls||clear")
 
         attrs = message["attributes"]
@@ -77,6 +104,13 @@ class PokemonFindView:
         console.print(table)
 
     def pokemon_find_fail(self, error: Dict) -> None:
+        """Exibe mensagem visual de erro quando a busca falha.
+
+        Mostra código de status, nome do erro e detalhes técnicos.
+
+        Args:
+            error (Dict): Dicionário contendo nome, código e detalhes do erro.
+        """
         os.system("cls||clear")
 
         title_text = Text("❌ Falha ao tentar buscar o Pokémon!", style="bold red")

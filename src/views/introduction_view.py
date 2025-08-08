@@ -1,3 +1,9 @@
+"""Exibe o menu principal da Pokédex com opções de comandos via CLI.
+
+Este módulo usa a biblioteca `rich` para renderizar uma interface colorida
+e organizada para o usuário interagir com o sistema.
+"""
+
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -7,6 +13,15 @@ console = Console()
 
 
 def introduction_page():
+    """Renderiza o menu inicial da Pokédex e solicita a escolha do usuário.
+
+    Exibe as opções disponíveis (cadastrar, buscar, listar, atualizar,
+    deletar Pokémon ou sair), numeradas de 1 a 6. O usuário deve escolher
+    uma das opções para dar continuidade ao fluxo do sistema.
+
+    Returns:
+        str: O comando selecionado pelo usuário (valores esperados: "1" a "6").
+    """
     title = Text("📘 Menu da Pokédex", style="bold magenta")
 
     table = Table.grid(padding=(0, 2))

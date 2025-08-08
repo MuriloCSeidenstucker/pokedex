@@ -1,3 +1,9 @@
+"""Interface CLI para remoção de Pokémons da Pokédex.
+
+Este módulo permite ao usuário interagir com o sistema para remover
+um Pokémon por ID ou nome, com feedback visual estilizado.
+"""
+
 import os
 from typing import Dict
 
@@ -14,7 +20,19 @@ console = Console()
 
 
 class PokemonDeleteView:
+    """Classe responsável pela interface visual do processo de exclusão de Pokémon."""
+
     def pokemon_delete_view(self) -> Dict:
+        """Coleta os dados necessários para remover um Pokémon.
+
+        O usuário pode escolher se deseja buscar o Pokémon por `ID` ou `Nome`,
+        e deve informar o valor correspondente.
+
+        Returns:
+            Dict: Contendo:
+                - `by` (str): Tipo de busca ("id" ou "name").
+                - `value` (str): Valor a ser utilizado para identificar o Pokémon.
+        """
         os.system("cls||clear")
 
         title = Text("🗑️ Remover Pokémon da Pokédex", style="bold red")
@@ -46,6 +64,11 @@ class PokemonDeleteView:
         return {"by": by, "value": value}
 
     def delete_pokemon_success(self, message: Dict) -> None:
+        """Exibe uma mensagem de sucesso com os dados do Pokémon removido.
+
+        Args:
+            message (Dict): Dicionário contendo os dados do Pokémon removido.
+        """
         attrs = message["attributes"]
 
         os.system("cls||clear")
@@ -69,6 +92,13 @@ class PokemonDeleteView:
         console.print(panel)
 
     def delete_pokemon_fail(self, error: Dict) -> None:
+        """Exibe uma mensagem de erro estilizada em caso de falha na exclusão.
+
+        Mostra informações como nome do erro, status e detalhes técnicos.
+
+        Args:
+            error (Dict): Dicionário contendo os dados do erro ocorrido.
+        """
         os.system("cls||clear")
 
         title_text = Text("❌ Falha ao tentar remover o Pokémon!", style="bold red")

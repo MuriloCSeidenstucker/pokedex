@@ -1,3 +1,9 @@
+"""Funções utilitárias para exibição de informações na interface CLI da Pokédex.
+
+Este módulo fornece utilitários para renderizar elementos visuais personalizados,
+como os tipos de Pokémon disponíveis, com cores e ícones.
+"""
+
 from rich.columns import Columns
 from rich.console import Console
 from rich.panel import Panel
@@ -9,6 +15,15 @@ console = Console()
 
 
 def render_types_panel():
+    """Renderiza os tipos de Pokémon disponíveis no terminal.
+
+    Exibe todos os tipos definidos no projeto, cada um com:
+    - Uma cor personalizada (`TYPE_COLORS`),
+    - Um ícone visual (`TYPE_ICONS`).
+
+    O conteúdo é exibido em colunas para facilitar a leitura pelo usuário.
+    Essa função é usada durante o registro e atualização de Pokémon para guiar a escolha do tipo.
+    """
     console.print("\n[bold magenta]Tipos Disponíveis:[/bold magenta]")
     panels = []
     for type_name in POKEMON_TYPES:
