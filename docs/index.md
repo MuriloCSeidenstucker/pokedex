@@ -1,17 +1,24 @@
-# Welcome to MkDocs
+# 📘 Pokédex CLI
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+Bem-vindo à documentação da Pokédex em linha de comando! Este projeto tem como objetivo fornecer uma interface de terminal para gerenciar informações de Pokémon utilizando Python e SQLAlchemy.
 
-## Commands
+## 🔧 Funcionalidades
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+- Cadastrar novos Pokémon
+- Buscar Pokémon por ID ou nome
+- Listar todos os Pokémon com filtros opcionais
+- Atualizar dados de um Pokémon
+- Remover Pokémon da Pokédex
 
-## Project layout
+## 🚀 Repositório
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+Acesse o repositório no GitHub: [pokedex](https://github.com/MuriloCSeidenstucker/pokedex)
+
+## 🗂️ Estrutura da documentação
+
+- [Visão Geral do Projeto](project_overview.md)
+- [Instalação](installation.md)
+- [Uso da CLI](cli_usage.md)
+- [Validações](validations.md)
+- [Arquitetura (MVC)](architecture.md)
+- [Exceções e Tratamento de Erros](exceptions.md)

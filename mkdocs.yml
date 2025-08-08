@@ -14,3 +14,12 @@ markdown_extensions:
 
 extra_css:
   - stylesheets/extra.css
+
+nav:
+  - Início: index.md
+  - Visão Geral: project_overview.md
+  - Instalação: installation.md
+  - Uso da CLI: cli_usage.md
+  - Validações: validations.md
+  - Arquitetura: architecture.md
+  - Exceções e Erros: exceptions.md
