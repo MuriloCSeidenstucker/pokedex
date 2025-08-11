@@ -1,0 +1,1 @@
+::: src.models.entities.pokemons_entity

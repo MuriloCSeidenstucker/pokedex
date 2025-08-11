@@ -1,0 +1,1 @@
+::: src.main.constructors.pokemon_delete_constructor

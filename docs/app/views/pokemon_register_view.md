@@ -1,0 +1,1 @@
+::: src.views.pokemon_register_view

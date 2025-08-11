@@ -6,7 +6,8 @@ Ele segue o padrão de arquitetura **MVC (Model-View-Controller)**.
 
 ## 📁 Módulos
 
-- `common/`: Estruturas auxiliares (tipos, validações, exceções, etc.)
+- `common/`: Estruturas auxiliares (tipos, exceções, etc.)
 - `models/`: Comunicação com o banco de dados
 - `controllers/`: Regras de negócio
 - `views/`: Interface do terminal
+- `main/`: Conexão dos módulos MVC, gerencia o fluxo da aplicação

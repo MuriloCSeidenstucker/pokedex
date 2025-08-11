@@ -15,11 +15,54 @@ markdown_extensions:
 extra_css:
   - stylesheets/extra.css
 
+plugins:
+- mkdocstrings:
+    handlers:
+      python:
+        paths: [src]
+
 nav:
   - Início: index.md
   - Visão Geral: project_overview.md
   - Instalação: installation.md
   - Uso da CLI: cli_usage.md
-  - Validações: validations.md
-  - Arquitetura: architecture.md
-  - Exceções e Erros: exceptions.md
+  - App:
+    - Main:
+      - Constructors:
+        - PokemonDeleteConstructor: app/main/constructors/pokemon_delete_constructor.md
+        - PokemonFindAllConstructor: app/main/constructors/pokemon_find_all_constructor.md
+        - PokemonFindConstructor: app/main/constructors/pokemon_find_constructor.md
+        - PokemonRegisterConstructor: app/main/constructors/pokemon_register_constructor.md
+        - PokemonUpdateConstructor: app/main/constructors/pokemon_update_constructor.md
+      - ProcessHandle: app/main/process_handle.md
+    - Controllers:
+      - PokemonDeleteController: app/controllers/pokemon_delete_controller.md
+      - PokemonFindAllController: app/controllers/pokemon_find_all_controller.md
+      - PokemonFindController: app/controllers/pokemon_find_controller.md
+      - PokemonRegisterController: app/controllers/pokemon_register_controller.md
+      - PokemonUpdateController: app/controllers/pokemon_update_controller.md
+    - Views:
+      - IntroductionView: app/views/introduction_view.md
+      - PokemonDeleteView: app/views/pokemon_delete_view.md
+      - PokemonFindAllView: app/views/pokemon_find_all_view.md
+      - PokemonFindView: app/views/pokemon_find_view.md
+      - PokemonRegisterView: app/views/pokemon_register_view.md
+      - PokemonUpdateView: app/views/pokemon_update_view.md
+    - Models:
+      - Entities:
+        - PokemonEntity: app/models/entities/pokemons_entity.md
+      - Repositories:
+        - PokemonsRepository: app/models/repositories/pokemons_repository.md
+      - Settings:
+        - Base: app/models/settings/base.md
+        - Connection: app/models/settings/connection.md
+    - Validators:
+      - DataValidator: app/validators/pokemon_data_validator.md
+      - QueryValidator: app/validators/pokemon_query_validator.md
+      - UpdateValidator: app/validators/pokemon_update_validator.md
+    - Common:
+      - By: app/common/by.md
+      - ErrorHandler: app/common/error_handler.md
+      - Exceptions: app/common/exceptions.md
+      - PokemonType: app/common/pokemon_type.md
+      - Pokemon: app/common/pokemon.md

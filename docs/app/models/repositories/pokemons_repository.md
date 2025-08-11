@@ -1,0 +1,1 @@
+::: src.models.repositories.pokemons_repository

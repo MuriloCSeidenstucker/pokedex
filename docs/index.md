@@ -19,6 +19,3 @@ Acesse o repositório no GitHub: [pokedex](https://github.com/MuriloCSeidenstuck
 - [Visão Geral do Projeto](project_overview.md)
 - [Instalação](installation.md)
 - [Uso da CLI](cli_usage.md)
-- [Validações](validations.md)
-- [Arquitetura (MVC)](architecture.md)
-- [Exceções e Tratamento de Erros](exceptions.md)

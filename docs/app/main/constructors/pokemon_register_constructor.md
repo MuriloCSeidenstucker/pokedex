@@ -1,0 +1,1 @@
+::: src.main.constructors.pokemon_register_constructor
