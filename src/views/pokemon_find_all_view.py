@@ -41,7 +41,7 @@ class PokemonFindAllView:
         """
         os.system("cls||clear")
 
-        title = Text("Buscar por Pokémons", style="bold yellow")
+        title = Text("Listar Pokémons", style="bold yellow")
         console.print(Panel.fit(title, border_style="bold yellow"))
 
         selected_update_options = []
@@ -50,7 +50,7 @@ class PokemonFindAllView:
         generation = None
         is_legendary = None
         update_options_title = Text(
-            "Deseja buscar por algo específico?", style="bold yellow"
+            "Deseja adicionar algum filtro?", style="bold yellow"
         )
         update_options = Table.grid(padding=(0, 2))
         update_options.add_column(justify="right", style="cyan")
@@ -60,10 +60,12 @@ class PokemonFindAllView:
         update_options.add_row("[bold]2[/bold]", "Geração")
         update_options.add_row("[bold]3[/bold]", "Status Lendário")
         update_options.add_row("[bold]4[/bold]", "Avançar")
-        console.print(
-            Panel.fit(update_options, title=update_options_title, border_style="yellow")
-        )
         while True:
+            console.print(
+                Panel.fit(
+                    update_options, title=update_options_title, border_style="yellow"
+                )
+            )
             if len(selected_update_options) == 4:
                 break
             selected_option = Prompt.ask(
@@ -97,9 +99,13 @@ class PokemonFindAllView:
                             choices=["1", "0"],
                         ).strip()
                 selected_update_options.append(selected_option)
+                os.system("cls||clear")
+                console.print(f"Opções já selecionadas: {selected_update_options}\n")
             else:
+                os.system("cls||clear")
                 console.print(f"Você já selecionou a opção '{selected_option}'")
-                console.print("Selecione outra opção ou precione '4' para avançar")
+                console.print("Selecione outra opção ou precione '4' para avançar\n")
+                console.print(f"Opções já selecionadas: {selected_update_options}\n")
 
         request_filter = {
             "type_1": type_1,

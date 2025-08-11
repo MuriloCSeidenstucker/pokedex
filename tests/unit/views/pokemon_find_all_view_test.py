@@ -13,12 +13,22 @@ from src.views.pokemon_find_all_view import PokemonFindAllView
         (
             ["0", "fire", "1", "", "2", "1", "3", "0"],
             {"type_1": 1, "type_2": 3, "generation": 5, "is_legendary": 7},
-            {"prompt_calls": 8, "print_calls": 6},
+            {
+                "mock_panel_calls": 6,
+                "os_system_calls": 5,
+                "prompt_calls": 8,
+                "print_calls": 14,
+            },
         ),
         (
             ["0", "fire", "1", "grass", "0", "4"],
             {"type_1": 1, "type_2": 3},
-            {"prompt_calls": 6, "print_calls": 8},
+            {
+                "mock_panel_calls": 5,
+                "os_system_calls": 4,
+                "prompt_calls": 6,
+                "print_calls": 14,
+            },
         ),
     ],
 )
@@ -38,9 +48,9 @@ def test_find_all_pokemon_view(
     view = PokemonFindAllView()
     response = view.find_all_pokemon_view()
 
-    mock_os_system.assert_called_once_with("cls||clear")
+    assert mock_os_system.call_count == expected_calls.get("os_system_calls")
     assert mock_print.call_count == expected_calls.get("print_calls")
-    assert mock_panel.call_count == 2
+    assert mock_panel.call_count == expected_calls.get("mock_panel_calls")
     assert mock_prompt.call_count == expected_calls.get("prompt_calls")
     assert mock_add_column.call_count == 2
     assert mock_add_row.call_count == 5
